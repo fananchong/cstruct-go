@@ -1,11 +1,15 @@
 package cstruct
 
 import (
+	"errors"
+	"fmt"
 	"reflect"
 
 	c "github.com/fananchong/cstruct-go/datatypes"
 	"github.com/fatih/structs"
 )
+
+type ByteOrder int
 
 const (
 	_  ByteOrder = iota //0
@@ -71,17 +75,56 @@ func packField(field *structs.Field, order ByteOrder) []byte {
 					ret = append(ret, c.Bool.PackBE(field.Value().(bool))...)
 				}
 			default:
-				panic("unknow type!")
+				panic(fmt.Sprintf("unknow type! type = %s", ctype))
 			}
 		}
 	}
 	return ret
 }
 
-func UnpackLE([]byte, interface{}) error {
-
+func UnpackLE(buf []byte, obj interface{}) error {
+	pos := 0
+	for _, field := range structs.Fields(obj) {
+		if err := unpackField(field, buf, &pos, LE); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
-func UnpackBE([]byte, interface{}) error {
+func UnpackBE(buf []byte, obj interface{}) error {
+	pos := 0
+	for _, field := range structs.Fields(obj) {
+		if err := unpackField(field, buf, &pos, BE); err != nil {
+			return err
+		}
+	}
+	return nil
+}
 
+func unpackField(field *structs.Field, buf []byte, pos *int, order ByteOrder) error {
+	switch field.Kind() {
+	case reflect.Struct:
+		for _, f := range field.Fields() {
+			if err := unpackField(f, buf, pos, order); err != nil {
+				return err
+			}
+		}
+	default:
+		ctype := field.Tag(Tag)
+		if ctype != "" {
+			switch ctype {
+			case CTypeBool:
+				if order == LE {
+					field.Set(c.Bool.UnpackLE(buf[*pos:]))
+				} else {
+					field.Set(c.Bool.UnpackBE(buf[*pos:]))
+				}
+				*pos = *pos + c.Bool.Size()
+			default:
+				return errors.New(fmt.Sprintf("unknow type! type = %s", ctype))
+			}
+		}
+	}
+	return nil
 }
