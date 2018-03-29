@@ -1,0 +1,15 @@
+{
+	"ImportPath": "github.com/fananchong/cstruct-go",
+	"GoVersion": "go1.9",
+	"GodepVersion": "v79",
+	"Packages": [
+		"./..."
+	],
+	"Deps": [
+		{
+			"ImportPath": "github.com/fatih/structs",
+			"Comment": "v1.0-15-gebf56d3",
+			"Rev": "ebf56d35bba727c68ac77f56f2fcf90b181851aa"
+		}
+	]
+}
