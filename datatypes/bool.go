@@ -1,25 +1,27 @@
 package datatypes
 
-type t_bool struct {
+type _bool struct {
 }
 
-func (this *t_bool) PackLE(val bool) []byte {
+func (this *_bool) PackLE(val bool) []byte {
 	if val {
-		return []byte(1 & 0xff)
+		return []byte{1 & 0xff}
 	} else {
-		return []byte(0 & 0xff)
+		return []byte{0 & 0xff}
 	}
 }
-func (this *t_bool) PackBE(val bool) []byte {
+func (this *_bool) PackBE(val bool) []byte {
 	return this.PackLE(val)
 }
-func (this *t_bool) UnpackLE(buf []byte) bool {
+func (this *_bool) UnpackLE(buf []byte) bool {
 	return buf[0] != 0
 }
-func (this *t_bool) UnpackBE(buf []byte) bool {
-	return this.UnpackBE(buf)
+func (this *_bool) UnpackBE(buf []byte) bool {
+	return this.UnpackLE(buf)
 
 }
-func (this *t_bool) Size() int {
+func (this *_bool) Size() int {
 	return 1
 }
+
+var Bool = &_bool{}
