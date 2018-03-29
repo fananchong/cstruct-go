@@ -57,7 +57,7 @@ c-style binary data pack & unpack for golang
 ## 复杂类型
 
 -   支持嵌套struct
--   支持不带`Tag`字段（不带`Tag`字段，不参与序列化、反序列化）
+-   支持不带`Tag`字段（不带`Tag`字段，不参与序列化、反序列化）
 
 ## 基本类型
 
