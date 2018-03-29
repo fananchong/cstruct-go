@@ -6,7 +6,7 @@ c-style binary data pack & unpack for golang
 
 实现类似以下用法：
 
-- 定义
+- define
 
   ```go
     type mystruct1 struct {
@@ -23,7 +23,7 @@ c-style binary data pack & unpack for golang
 - pack
 
   ```go
-    func pack(obj) []byte {
+    func pack(obj interface{}) []byte {
 
     }
   ```
