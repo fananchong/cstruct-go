@@ -18,7 +18,6 @@ func (this *_bool) UnpackLE(buf []byte) bool {
 }
 func (this *_bool) UnpackBE(buf []byte) bool {
 	return this.UnpackLE(buf)
-
 }
 func (this *_bool) Size() int {
 	return 1
