@@ -7,17 +7,17 @@ import (
 )
 
 type mystruct3 struct {
-	F3 float64 `c:double`
-	F4 string  `c:string`
+	F3 float64 `c:"double"`
+	F4 string  `c:"string"`
 }
 
 type mystruct2 struct {
-	F6  int8  `c:int8`
-	F7  int16 `c:int16`
-	F8  int32 `c:int24`
-	F9  int32 `c:int32`
-	F10 int64 `c:int40`
-	F11 int64 `c:int64`
+	F6  int8  `c:"int8"`
+	F7  int16 `c:"int16"`
+	F8  int32 `c:"int24"`
+	F9  int32 `c:"int32"`
+	F10 int64 `c:"int40"`
+	F11 int64 `c:"int64"`
 	S0  mystruct3
 }
 
@@ -93,4 +93,32 @@ func main() {
 		return
 	}
 	fmt.Println("NewVal(b):", *d)
+
+	fmt.Println("b.F1 =", b.F1)
+	fmt.Println("b.F2 =", b.F2)
+	fmt.Println("b.F3 =", b.F3)
+	fmt.Println("b.F4 =", b.F4)
+	fmt.Println("b.F5 =", b.F5)
+	fmt.Println("b.F6 =", b.F6)
+	fmt.Println("b.F7 =", b.F7)
+	fmt.Println("b.F8 =", b.F8)
+	fmt.Println("b.F9 =", b.F9)
+	fmt.Println("b.F10 =", b.F10)
+	fmt.Println("b.F11 =", b.F11)
+	fmt.Println("b.F12 =", b.F12)
+	fmt.Println("b.F13 =", b.F13)
+	fmt.Println("b.F14 =", b.F14)
+	fmt.Println("b.F15 =", b.F15)
+	fmt.Println("b.F16 =", b.F16)
+	fmt.Println("b.F17 =", b.F17)
+	fmt.Println("b.F17 =", b.F17)
+
+	fmt.Println("b.S0.F6 =", b.S0.F6)
+	fmt.Println("b.S0.F7 =", b.S0.F7)
+	fmt.Println("b.S0.F8 =", b.S0.F8)
+	fmt.Println("b.S0.F9 =", b.S0.F9)
+	fmt.Println("b.S0.F10 =", b.S0.F10)
+	fmt.Println("b.S0.F11 =", b.S0.F11)
+	fmt.Println("b.S0.S0.F3 =", b.S0.S0.F3)
+	fmt.Println("b.S0.S0.F4 =", b.S0.S0.F4)
 }
