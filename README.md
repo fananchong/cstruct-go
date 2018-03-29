@@ -40,8 +40,8 @@ c-style binary data pack & unpack for golang
     // 反序列化代码如下
     b := &mystruct1{}
     if err := cstruct.UnpackLE(buf_l, b); err != nil {
-    		fmt.Println(err)
-    		return
+    	fmt.Println(err)
+    	return
     }
     ```
 
