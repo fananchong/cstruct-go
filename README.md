@@ -20,7 +20,7 @@ c-style binary data pack & unpack for golang
     }
   ```
 
-- pack
+- pack (le && be)
 
   ```go
     func pack(obj interface{}) []byte {
@@ -28,7 +28,7 @@ c-style binary data pack & unpack for golang
     }
   ```
 
-- unpack
+- unpack (le && be)
 
   ```go
     func unpack([]byte) interface{} {
