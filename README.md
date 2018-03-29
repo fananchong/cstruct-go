@@ -8,23 +8,23 @@ c-style binary data pack & unpack for golang
 
     ```go
     type mystruct1 struct {
-    	F1  bool    `c:"bool"`
-    	F2  float32 `c:"float"`
-    	F3  float64 `c:"double"`
-    	F4  string `c:"string"`
-    	F5  []byte `c:"binary"`
-    	F6  int8   `c:"int8"`
-    	F7  int16  `c:"int16"`
-    	F8  int32  `c:"int24"`
-    	F9  int32  `c:"int32"`
-    	F10 int64  `c:"int40"`
-    	F11 int64  `c:"int64"`
-    	F12 uint8  `c:"uint8"`
-    	F13 uint16 `c:"uint16"`
-    	F14 uint32 `c:"uint24"`
-    	F15 uint32 `c:"uint32"`
-    	F16 uint64 `c:"uint40"`
-    	F17 uint64 `c:"uint64"`
+        F1  bool    `c:"bool"`
+        F2  float32 `c:"float"`
+        F3  float64 `c:"double"`
+        F4  string `c:"string"`
+        F5  []byte `c:"binary"`
+        F6  int8   `c:"int8"`
+        F7  int16  `c:"int16"`
+        F8  int32  `c:"int24"`
+        F9  int32  `c:"int32"`
+        F10 int64  `c:"int40"`
+        F11 int64  `c:"int64"`
+        F12 uint8  `c:"uint8"`
+        F13 uint16 `c:"uint16"`
+        F14 uint32 `c:"uint24"`
+        F15 uint32 `c:"uint32"`
+        F16 uint64 `c:"uint40"`
+        F17 uint64 `c:"uint64"`
     }
     ```
 
@@ -40,8 +40,8 @@ c-style binary data pack & unpack for golang
     // 反序列化代码如下
     b := &mystruct1{}
     if err := cstruct.UnpackLE(buf_l, b); err != nil {
-    	fmt.Println(err)
-    	return
+        fmt.Println(err)
+        return
     }
     ```
 
