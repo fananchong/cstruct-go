@@ -80,3 +80,11 @@ c-style binary data pack & unpack for golang
 | double    | float64 | 8 byte                     |
 | string    | string  | len(字符串)[2 byte] + 字符串     |
 | binary    | \[]byte | len(2进制数据)[2 byte] + 2进制数据 |
+
+
+## TODO
+
+  - 参考go protobuf实现，优化buffer
+  - 参考go protobuf实现，优化反射代码
+  
+  
