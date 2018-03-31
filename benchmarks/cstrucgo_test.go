@@ -1,9 +1,10 @@
-package benchmark1
+package benchmarks
 
 import (
 	"testing"
 
 	cstruct "github.com/fananchong/cstruct-go"
+	"github.com/golang/protobuf/proto"
 )
 
 type mystruct1 struct {
@@ -50,5 +51,32 @@ func Benchmark_CStructGO(b *testing.B) {
 		buf_l := cstruct.PackLE(a0)
 		a1 := &mystruct1{}
 		cstruct.UnpackLE(buf_l, a1)
+	}
+}
+
+func Benchmark_Protobuf(b *testing.B) {
+	a0 := &Myproto1{}
+	a0.F1 = true
+	a0.F2 = 0.98
+	a0.F3 = 999.777
+	a0.F4 = "hellohellohellohellohellohellohellohellohellohello"
+	a0.F5 = []byte{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9}
+	a0.F6 = 126
+	a0.F7 = 32766
+	a0.F8 = -8388608
+	a0.F9 = -2147483646
+	a0.F10 = 549755813887
+	a0.F11 = -9223372036854774807
+	a0.F12 = 254
+	a0.F13 = 65534
+	a0.F14 = 16777214
+	a0.F15 = 4294967295
+	a0.F16 = 1099511627770
+	a0.F17 = 18446744073709551614
+
+	for i := 0; i < b.N; i++ {
+		buf_l, _ := proto.Marshal(a0)
+		a1 := &Myproto1{}
+		proto.Unmarshal(buf_l, a1)
 	}
 }

@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package benchmarks;
+
+message Myproto1
+{
+    bool F1 = 1;
+    float F2 = 2;
+	double F3 = 3;
+	string F4 = 4;
+	bytes F5 = 5;
+	int32 F6 = 6;
+	int32 F7 = 7;
+	int32 F8 = 8;
+	int32 F9 = 9;
+	int64 F10 = 10;
+	int64 F11 = 11;
+	uint32 F12 = 12;
+	uint32 F13 = 13;
+	uint32 F14 = 14;
+	uint32 F15 = 15;
+	uint64 F16 = 16;
+	uint64 F17 = 17;
+}
