@@ -63,17 +63,15 @@ func getPropertiesLocked(t reflect.Type) *StructProperties {
 
 type encoder func(p *Buffer, prop *Properties, base structPointer) error
 type decoder func(p *Buffer, prop *Properties, base structPointer) error
-type sizer func(p *Buffer, prop *Properties, base structPointer) int
 
 type Properties struct {
 	Name string
-	tag  string
+	tag  int
 
 	// 或者是字段
 	field field
 	enc   encoder
 	dec   decoder
-	size  sizer
 
 	// 或者是嵌套结构体
 	sprop *StructProperties
@@ -93,13 +91,31 @@ func (p *Properties) init(typ reflect.Type, name, tag string, f *reflect.StructF
 }
 
 func (p *Properties) Parse(s string) {
-	p.tag = s
+	switch s {
+	case CTypeBool:
+		p.tag = 1
+	case CTypeInt8:
+		p.tag = 2
+	case CTypeUInt8:
+		p.tag = 2
+	case CTypeInt16:
+		p.tag = 3
+	case CTypeUInt16:
+		p.tag = 4
+	case CTypeInt32:
+		p.tag = 4
+	case CTypeUInt32:
+		p.tag = 4
+	case CTypeInt64:
+		p.tag = 5
+	case CTypeUInt64:
+		p.tag = 5
+	}
 }
 
 func (p *Properties) setEncAndDec(typ reflect.Type, f *reflect.StructField, lockGetProp bool) {
 	p.enc = nil
 	p.dec = nil
-	p.size = nil
 
 	if typ.Kind() == reflect.Struct {
 		if lockGetProp {
@@ -109,37 +125,35 @@ func (p *Properties) setEncAndDec(typ reflect.Type, f *reflect.StructField, lock
 		}
 	} else {
 		switch p.tag {
-		case CTypeBool:
+		case 1:
 			p.enc = (*Buffer).enc_bool
 			p.dec = (*Buffer).dec_bool
-			p.size = (*Buffer).size_bool
-		case CTypeInt8:
+		case 2:
 			p.enc = (*Buffer).enc_uint8
 			p.dec = (*Buffer).dec_uint8
-			p.size = (*Buffer).size_uint8
-		case CTypeUInt8:
-			p.enc = (*Buffer).enc_uint8
-			p.dec = (*Buffer).dec_uint8
-			p.size = (*Buffer).size_uint8
-		case CTypeInt16:
+		case 3:
 			if CurrentByteOrder == LE {
 				p.enc = (*Buffer).enc_uint16le
 				p.dec = (*Buffer).dec_uint16le
-				p.size = (*Buffer).size_uint16
 			} else {
 				p.enc = (*Buffer).enc_uint16be
 				p.dec = (*Buffer).dec_uint16be
-				p.size = (*Buffer).size_uint16
 			}
-		case CTypeUInt16:
+		case 4:
 			if CurrentByteOrder == LE {
-				p.enc = (*Buffer).enc_uint16le
-				p.dec = (*Buffer).dec_uint16le
-				p.size = (*Buffer).size_uint16
+				p.enc = (*Buffer).enc_uint32le
+				p.dec = (*Buffer).dec_uint32le
 			} else {
-				p.enc = (*Buffer).enc_uint16be
-				p.dec = (*Buffer).dec_uint16be
-				p.size = (*Buffer).size_uint16
+				p.enc = (*Buffer).enc_uint32be
+				p.dec = (*Buffer).dec_uint32be
+			}
+		case 5:
+			if CurrentByteOrder == LE {
+				p.enc = (*Buffer).enc_uint64le
+				p.dec = (*Buffer).dec_uint64le
+			} else {
+				p.enc = (*Buffer).enc_uint64be
+				p.dec = (*Buffer).dec_uint64be
 			}
 		default:
 			panic(fmt.Sprintf("unknow type! type = %s", p.tag))

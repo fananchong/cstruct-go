@@ -72,6 +72,7 @@ func (o *Buffer) unmarshalType(st reflect.Type, prop *StructProperties, base str
 	return nil
 }
 
+// bool
 func (o *Buffer) enc_bool(p *Properties, base structPointer) error {
 	v := structPointer_BoolVal(base, p.field)
 	if v == nil {
@@ -92,14 +93,15 @@ func (o *Buffer) dec_bool(p *Properties, base structPointer) error {
 	}
 	o.index = i
 	u := uint8(o.buf[i-1])
-	*structPointer_BoolVal(base, p.field) = (u != 0)
+	v := structPointer_BoolVal(base, p.field)
+	if v == nil {
+		return ErrNil
+	}
+	*v = (u != 0)
 	return nil
 }
 
-func (o *Buffer) size_bool(prop *Properties, base structPointer) int {
-	return 1
-}
-
+// uint8
 func (o *Buffer) enc_uint8(p *Properties, base structPointer) error {
 	v := (*uint8)(unsafe.Pointer(uintptr(base) + uintptr(p.field)))
 	if v == nil {
@@ -116,14 +118,15 @@ func (o *Buffer) dec_uint8(p *Properties, base structPointer) error {
 	}
 	o.index = i
 	u := uint8(o.buf[i-1])
-	*(*uint8)(unsafe.Pointer(uintptr(base) + uintptr(p.field))) = u
+	v := (*uint8)(unsafe.Pointer(uintptr(base) + uintptr(p.field)))
+	if v == nil {
+		return ErrNil
+	}
+	*v = u
 	return nil
 }
 
-func (o *Buffer) size_uint8(prop *Properties, base structPointer) int {
-	return 1
-}
-
+// uint16
 func (o *Buffer) enc_uint16le(p *Properties, base structPointer) error {
 	v := (*uint16)(unsafe.Pointer(uintptr(base) + uintptr(p.field)))
 	if v == nil {
@@ -152,7 +155,11 @@ func (o *Buffer) dec_uint16le(p *Properties, base structPointer) error {
 	o.index = i
 	u := uint16(o.buf[i-2])
 	u |= uint16(o.buf[i-1]) << 8
-	*(*uint16)(unsafe.Pointer(uintptr(base) + uintptr(p.field))) = u
+	v := (*uint16)(unsafe.Pointer(uintptr(base) + uintptr(p.field)))
+	if v == nil {
+		return ErrNil
+	}
+	*v = u
 	return nil
 }
 
@@ -164,10 +171,132 @@ func (o *Buffer) dec_uint16be(p *Properties, base structPointer) error {
 	o.index = i
 	u := uint16(o.buf[i-2]) << 8
 	u |= uint16(o.buf[i-1])
-	*(*uint16)(unsafe.Pointer(uintptr(base) + uintptr(p.field))) = u
+	v := (*uint16)(unsafe.Pointer(uintptr(base) + uintptr(p.field)))
+	if v == nil {
+		return ErrNil
+	}
+	*v = u
 	return nil
 }
 
-func (o *Buffer) size_uint16(prop *Properties, base structPointer) int {
-	return 2
+// uint32
+func (o *Buffer) enc_uint32le(p *Properties, base structPointer) error {
+	v := (*uint32)(unsafe.Pointer(uintptr(base) + uintptr(p.field)))
+	if v == nil {
+		return ErrNil
+	}
+	x := *v
+	o.buf = append(o.buf, uint8(x), uint8(x>>8), uint8(x>>16), uint8(x>>24))
+	return nil
+}
+
+func (o *Buffer) enc_uint32be(p *Properties, base structPointer) error {
+	v := (*uint32)(unsafe.Pointer(uintptr(base) + uintptr(p.field)))
+	if v == nil {
+		return ErrNil
+	}
+	x := *v
+	o.buf = append(o.buf, uint8(x>>24), uint8(x>>16), uint8(x>>8), uint8(x))
+	return nil
+}
+
+func (o *Buffer) dec_uint32le(p *Properties, base structPointer) error {
+	i := o.index + 4
+	if i < 0 || i > len(o.buf) {
+		return io.ErrUnexpectedEOF
+	}
+	o.index = i
+	u := uint32(o.buf[i-4])
+	u |= uint32(o.buf[i-3]) << 8
+	u |= uint32(o.buf[i-2]) << 16
+	u |= uint32(o.buf[i-1]) << 24
+	v := (*uint32)(unsafe.Pointer(uintptr(base) + uintptr(p.field)))
+	if v == nil {
+		return ErrNil
+	}
+	*v = u
+	return nil
+}
+
+func (o *Buffer) dec_uint32be(p *Properties, base structPointer) error {
+	i := o.index + 4
+	if i < 0 || i > len(o.buf) {
+		return io.ErrUnexpectedEOF
+	}
+	o.index = i
+	u := uint32(o.buf[i-4]) << 24
+	u = uint32(o.buf[i-3]) << 16
+	u = uint32(o.buf[i-2]) << 8
+	u |= uint32(o.buf[i-1])
+	v := (*uint32)(unsafe.Pointer(uintptr(base) + uintptr(p.field)))
+	if v == nil {
+		return ErrNil
+	}
+	*v = u
+	return nil
+}
+
+// uint64
+func (o *Buffer) enc_uint64le(p *Properties, base structPointer) error {
+	v := (*uint64)(unsafe.Pointer(uintptr(base) + uintptr(p.field)))
+	if v == nil {
+		return ErrNil
+	}
+	x := *v
+	o.buf = append(o.buf, uint8(x), uint8(x>>8), uint8(x>>16), uint8(x>>24), uint8(x>>32), uint8(x>>40), uint8(x>>48), uint8(x>>56))
+	return nil
+}
+
+func (o *Buffer) enc_uint64be(p *Properties, base structPointer) error {
+	v := (*uint64)(unsafe.Pointer(uintptr(base) + uintptr(p.field)))
+	if v == nil {
+		return ErrNil
+	}
+	x := *v
+	o.buf = append(o.buf, uint8(x>>56), uint8(x>>48), uint8(x>>40), uint8(x>>32), uint8(x>>24), uint8(x>>16), uint8(x>>8), uint8(x))
+	return nil
+}
+
+func (o *Buffer) dec_uint64le(p *Properties, base structPointer) error {
+	i := o.index + 8
+	if i < 0 || i > len(o.buf) {
+		return io.ErrUnexpectedEOF
+	}
+	o.index = i
+	u := uint64(o.buf[i-8])
+	u |= uint64(o.buf[i-7]) << 8
+	u |= uint64(o.buf[i-6]) << 16
+	u |= uint64(o.buf[i-5]) << 24
+	u |= uint64(o.buf[i-4]) << 32
+	u |= uint64(o.buf[i-3]) << 40
+	u |= uint64(o.buf[i-2]) << 48
+	u |= uint64(o.buf[i-1]) << 56
+	v := (*uint64)(unsafe.Pointer(uintptr(base) + uintptr(p.field)))
+	if v == nil {
+		return ErrNil
+	}
+	*v = u
+	return nil
+}
+
+func (o *Buffer) dec_uint64be(p *Properties, base structPointer) error {
+	i := o.index + 8
+	if i < 0 || i > len(o.buf) {
+		return io.ErrUnexpectedEOF
+	}
+	o.index = i
+	u := uint64(o.buf[i-8]) << 56
+	u = uint64(o.buf[i-7]) << 48
+	u = uint64(o.buf[i-6]) << 40
+	u = uint64(o.buf[i-5]) << 32
+	u = uint64(o.buf[i-4]) << 24
+	u = uint64(o.buf[i-3]) << 16
+	u = uint64(o.buf[i-2]) << 8
+	u |= uint64(o.buf[i-1])
+	v := (*uint64)(unsafe.Pointer(uintptr(base) + uintptr(p.field)))
+	if v == nil {
+		return ErrNil
+	}
+	*v = u
+	return nil
 }
