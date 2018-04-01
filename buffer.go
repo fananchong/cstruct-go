@@ -300,3 +300,101 @@ func (o *Buffer) dec_uint64be(p *Properties, base structPointer) error {
 	*v = u
 	return nil
 }
+
+// string
+func (o *Buffer) enc_string(p *Properties, base structPointer) error {
+	v := structPointer_StringVal(base, p.field)
+	if v == nil {
+		return ErrNil
+	}
+	x := len(*v)
+	if CurrentByteOrder == LE {
+		o.buf = append(o.buf, uint8(x), uint8(x>>8))
+	} else {
+		o.buf = append(o.buf, uint8(x>>8), uint8(x))
+	}
+
+	if x > 0 {
+		o.buf = append(o.buf, (*v)...)
+	}
+	return nil
+}
+
+func (o *Buffer) dec_string(p *Properties, base structPointer) error {
+	i := o.index + 2
+	if i < 0 || i > len(o.buf) {
+		return io.ErrUnexpectedEOF
+	}
+	o.index = i
+	var nb uint16 = 0
+	if CurrentByteOrder == LE {
+		nb = uint16(o.buf[i-2])
+		nb |= uint16(o.buf[i-1]) << 8
+	} else {
+		nb = uint16(o.buf[i-2]) << 8
+		nb |= uint16(o.buf[i-1])
+	}
+
+	end := o.index + int(nb)
+	if end < o.index || end > len(o.buf) {
+		return io.ErrUnexpectedEOF
+	}
+	buf := o.buf[o.index:end]
+	o.index += int(nb)
+
+	v := structPointer_StringVal(base, p.field)
+	if v == nil {
+		return ErrNil
+	}
+	*v = string(buf)
+	return nil
+}
+
+// binary
+func (o *Buffer) enc_binary(p *Properties, base structPointer) error {
+	v := structPointer_Bytes(base, p.field)
+	if v == nil {
+		return ErrNil
+	}
+	x := len(*v)
+	if CurrentByteOrder == LE {
+		o.buf = append(o.buf, uint8(x), uint8(x>>8))
+	} else {
+		o.buf = append(o.buf, uint8(x>>8), uint8(x))
+	}
+
+	if x > 0 {
+		o.buf = append(o.buf, (*v)...)
+	}
+	return nil
+}
+
+func (o *Buffer) dec_binary(p *Properties, base structPointer) error {
+	i := o.index + 2
+	if i < 0 || i > len(o.buf) {
+		return io.ErrUnexpectedEOF
+	}
+	o.index = i
+	var nb uint16 = 0
+	if CurrentByteOrder == LE {
+		nb = uint16(o.buf[i-2])
+		nb |= uint16(o.buf[i-1]) << 8
+	} else {
+		nb = uint16(o.buf[i-2]) << 8
+		nb |= uint16(o.buf[i-1])
+	}
+
+	end := o.index + int(nb)
+	if end < o.index || end > len(o.buf) {
+		return io.ErrUnexpectedEOF
+	}
+	buf := o.buf[o.index:end]
+	o.index += int(nb)
+
+	v := structPointer_Bytes(base, p.field)
+	if v == nil {
+		return ErrNil
+	}
+	*v = append(buf)
+	return nil
+}

@@ -110,6 +110,14 @@ func (p *Properties) Parse(s string) {
 		p.tag = 5
 	case CTypeUInt64:
 		p.tag = 5
+	case CTypeFloat:
+		p.tag = 4
+	case CTypeDouble:
+		p.tag = 5
+	case CTypeString:
+		p.tag = 6
+	case CTypeBinary:
+		p.tag = 7
 	}
 }
 
@@ -155,6 +163,12 @@ func (p *Properties) setEncAndDec(typ reflect.Type, f *reflect.StructField, lock
 				p.enc = (*Buffer).enc_uint64be
 				p.dec = (*Buffer).dec_uint64be
 			}
+		case 6:
+			p.enc = (*Buffer).enc_string
+			p.dec = (*Buffer).dec_string
+		case 7:
+			p.enc = (*Buffer).enc_binary
+			p.dec = (*Buffer).dec_binary
 		default:
 			panic(fmt.Sprintf("unknow type! type = %s", p.tag))
 		}
