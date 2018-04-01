@@ -2,41 +2,36 @@ package mytest
 
 import (
 	"fmt"
-	"sync"
 	"testing"
 
 	cstruct "github.com/fananchong/cstruct-go"
 )
 
 type mystruct3 struct {
-	F5 []byte `c:"binary"`
+	F5 []byte
 }
 
 type mystruct2 struct {
-	F3 float64 `c:"double"`
-	F4 string  `c:"string"`
+	F3 float64
+	F4 string
 	S1 mystruct3
 }
 
 type mystruct1 struct {
-	N0  map[int]string
-	F1  bool    `c:"bool"`
-	F2  float32 `c:"float"`
-	F3  float64 `c:"double"`
-	F4  string  `c:"string"`
-	F5  []byte  `c:"binary"`
-	F6  int8    `c:"int8"`
-	F7  int16   `c:"int16"`
-	N8  int32
-	F9  int32 `c:"int32"`
-	N10 int64
-	F11 int64  `c:"int64"`
-	F12 uint8  `c:"uint8"`
-	F13 uint16 `c:"uint16"`
+	F1  bool
+	F2  float32
+	F3  float64
+	F4  string
+	F5  []byte
+	F6  int8
+	F7  int16
+	F9  int32
+	F11 int64
+	F12 uint8
+	F13 uint16
 	S0  *mystruct2
-	F15 uint32 `c:"uint32"`
-	F17 uint64 `c:"uint64"`
-	N18 *sync.Map
+	F15 uint32
+	F17 uint64
 }
 
 func Test_LE1(t *testing.T) {

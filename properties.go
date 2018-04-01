@@ -47,7 +47,7 @@ func getPropertiesLocked(t reflect.Type) *StructProperties {
 		f := t.Field(i)
 		p := new(Properties)
 		name := f.Name
-		p.init(f.Type, name, f.Tag.Get("c"), &f)
+		p.init(f.Type, name, "", &f)
 		prop.Prop[i] = p
 	}
 
@@ -90,30 +90,35 @@ func (p *Properties) init(typ reflect.Type, name, tag string, f *reflect.StructF
 		p.dec = (*Buffer).dec_substruct
 		return
 	}
-	if p.Parse(tag) == 0 {
+	if p.Parse(typ, f) == 0 {
 		return
 	}
 	p.setEncAndDec(typ, f)
 
 }
 
-func (p *Properties) Parse(s string) int {
-	switch s {
-	case CTypeBool:
+func (p *Properties) Parse(typ reflect.Type, f *reflect.StructField) int {
+	switch typ.Kind() {
+	case reflect.Bool:
 		p.tag = 1
-	case CTypeInt8, CTypeUInt8:
+	case reflect.Int8, reflect.Uint8:
 		p.tag = 2
-	case CTypeInt16, CTypeUInt16:
+	case reflect.Int16, reflect.Uint16:
 		p.tag = 3
-	case CTypeInt32, CTypeUInt32, CTypeFloat:
+	case reflect.Int32, reflect.Uint32, reflect.Float32:
 		p.tag = 4
-	case CTypeInt64, CTypeUInt64, CTypeDouble:
+	case reflect.Int64, reflect.Uint64, reflect.Float64:
 		p.tag = 5
-	case CTypeString:
+	case reflect.String:
 		p.tag = 6
-	case CTypeBinary:
-		p.tag = 7
-	default:
+	case reflect.Slice:
+		switch t2 := typ.Elem(); t2.Kind() {
+		case reflect.Uint8: // []byte
+			p.tag = 7
+		}
+	}
+	if p.tag == 0 {
+		panic("cstruct: unknow type. field name =" + f.Name)
 	}
 	return p.tag
 }
