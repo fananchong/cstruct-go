@@ -7,6 +7,11 @@ import (
 	"github.com/golang/protobuf/proto"
 )
 
+type mystruct2 struct {
+	F3 float64 `c:"double"`
+	F4 string  `c:"string"`
+}
+
 type mystruct1 struct {
 	F1  bool    `c:"bool"`
 	F2  float32 `c:"float"`
@@ -21,6 +26,7 @@ type mystruct1 struct {
 	F13 uint16  `c:"uint16"`
 	F15 uint32  `c:"uint32"`
 	F17 uint64  `c:"uint64"`
+	S0  mystruct2
 }
 
 func Benchmark_CStructGO(b *testing.B) {
@@ -38,6 +44,8 @@ func Benchmark_CStructGO(b *testing.B) {
 	a0.F13 = 65534
 	a0.F15 = 4294967295
 	a0.F17 = 18446744073709551614
+	a0.S0.F3 = 988.07
+	a0.S0.F4 = "world1world1world1world1world1world1world1world1world1"
 
 	for i := 0; i < b.N; i++ {
 		buf_l, _ := cstruct.Marshal(a0)
@@ -61,6 +69,9 @@ func Benchmark_Protobuf(b *testing.B) {
 	a0.F13 = 65534
 	a0.F15 = 4294967295
 	a0.F17 = 18446744073709551614
+	a0.S0 = &Myproto2{}
+	a0.S0.F3 = 988.07
+	a0.S0.F4 = "world1world1world1world1world1world1world1world1world1"
 
 	for i := 0; i < b.N; i++ {
 		buf_l, _ := proto.Marshal(a0)

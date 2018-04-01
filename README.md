@@ -2,45 +2,44 @@
 
 c-style struct pack & unpack for golang
 
-
 ## 用法
 
-1.  定义举例
+1. 定义举例
 
-    ```go
-    type mystruct1 struct {
-	    F1  bool    `c:"bool"`
-	    F2  float32 `c:"float"`
-	    F3  float64 `c:"double"`
-	    F4  string  `c:"string"`
-	    F5  []byte  `c:"binary"`
-	    F6  int8    `c:"int8"`
-	    F7  int16   `c:"int16"`
-	    F9  int32   `c:"int32"`
-	    F11 int64   `c:"int64"`
-	    F12 uint8   `c:"uint8"`
-	    F13 uint16  `c:"uint16"`
-	    F15 uint32  `c:"uint32"`
-	    F17 uint64  `c:"uint64"`
-    }
-    ```
+  ```go
+  type mystruct1 struct {
+    F1  bool    `c:"bool"`
+    F2  float32 `c:"float"`
+    F3  float64 `c:"double"`
+    F4  string  `c:"string"`
+    F5  []byte  `c:"binary"`
+    F6  int8    `c:"int8"`
+    F7  int16   `c:"int16"`
+    F9  int32   `c:"int32"`
+    F11 int64   `c:"int64"`
+    F12 uint8   `c:"uint8"`
+    F13 uint16  `c:"uint16"`
+    F15 uint32  `c:"uint32"`
+    F17 uint64  `c:"uint64"`
+  }
+  ```
 
-2.  使用举例
+2. 使用举例
 
-    ```go
-    a := &mystruct1{}
-    // ...(初始化a 代码略)...
+  ```go
+  a := &mystruct1{}
+  // ...(初始化a 代码略)...
 
-    // 序列化代码如下，返回 []byte类型数据
-    buf_l, _ := cstruct.Marshal(a)
+  // 序列化代码如下，返回 []byte类型数据
+  buf_l, _ := cstruct.Marshal(a)
 
-    // 反序列化代码如下
-    b := &mystruct1{}
-    if err := cstruct.Unmarshal(buf_l, b); err != nil {
-        fmt.Println(err)
-        return
-    }
-    ```
+  // 反序列化代码如下
+  b := &mystruct1{}
+  if err := cstruct.Unmarshal(buf_l, b); err != nil {
+    fmt.Println(err)
+    return
+  }
+  ```
 
 ## 字节序
 
@@ -58,25 +57,30 @@ cstruct.CurrentByteOrder = cstruct.LE
 cstruct.CurrentByteOrder = cstruct.BE
 ```
 
-
 ## 基本类型
 
-| cstruct类型 | go类型    | 内存说明                 |
-| --------- | ------- | -------------------------- |
-| bool      | bool    | 1 byte                     |
-| int8      | int8    | 1 byte                     |
-| uint8     | uint8   | 1 byte                     |
-| int16     | int16   | 2 byte                     |
-| uint16    | uint16  | 2 byte                     |
-| int32     | int32   | 4 byte                     |
-| uint32    | uint32  | 4 byte                     |
-| int64     | int64   | 8 byte                     |
-| uint64    | uint64  | 8 byte                     |
-| float     | float32 | 4 byte                     |
-| double    | float64 | 8 byte                     |
-| string    | string  | [2 byte] + [len(字符串)]    |
-| binary    | \[]byte | [2 byte] + [len(2进制数据)] |
+cstruct类型 | go类型    | 内存说明
+--------- | ------- | -----------------------
+bool      | bool    | 1 byte
+int8      | int8    | 1 byte
+uint8     | uint8   | 1 byte
+int16     | int16   | 2 byte
+uint16    | uint16  | 2 byte
+int32     | int32   | 4 byte
+uint32    | uint32  | 4 byte
+int64     | int64   | 8 byte
+uint64    | uint64  | 8 byte
+float     | float32 | 4 byte
+double    | float64 | 8 byte
+string    | string  | [2 byte] + [len(字符串)]
+binary    | []byte  | [2 byte] + [len(2进制数据)]
 
+## 复杂类型
+
+- 支持struct嵌套（包括指针类型、及非指针类型）
+- 支持不带Tag字段（忽略掉，不参与序列化、反序列化）
+
+详细例子可以参考：[x_test.go](tests/x_test.go)
 
 ## 基准测试
 
@@ -85,24 +89,18 @@ D:\golang\src\github.com\fananchong\cstruct-go\benchmarks>go test -test.bench=".
 goos: windows
 goarch: amd64
 pkg: github.com/fananchong/cstruct-go/benchmarks
-Benchmark_CStructGO-4            1000000              1206 ns/op
-Benchmark_Protobuf-4              500000              2708 ns/op
+Benchmark_CStructGO-4            1000000              1670 ns/op
+Benchmark_Protobuf-4              500000              3650 ns/op
 PASS
-ok      github.com/fananchong/cstruct-go/benchmarks     2.975s
+ok      github.com/fananchong/cstruct-go/benchmarks     4.845s
 ```
 
 基准测试代码：[cstrucgo_test.go](benchmarks/cstrucgo_test.go)
 
-
-
 ## 参考项目
 
-  - https://github.com/golang/protobuf
-  
-  
+- <https://github.com/golang/protobuf>
+
 ## TODO
 
-  - 支持嵌套struct
-  - 支持类型int24、int40
-  - 支持过滤不带Tag的字段
-  
+- 支持类型int24、int40

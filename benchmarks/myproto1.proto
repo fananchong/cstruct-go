@@ -2,6 +2,12 @@ syntax = "proto3";
 
 package benchmarks;
 
+message Myproto2
+{
+	double F3 = 3;
+	string F4 = 4;
+}
+
 message Myproto1
 {
     bool F1 = 1;
@@ -21,4 +27,5 @@ message Myproto1
 	uint32 F15 = 15;
 	uint64 F16 = 16;
 	uint64 F17 = 17;
+	Myproto2 S0 = 18;
 }
