@@ -91,6 +91,10 @@ PASS
 ok      github.com/fananchong/cstruct-go/benchmarks     2.975s
 ```
 
+基准测试代码：[cstrucgo_test.go](benchmarks/cstrucgo_test.go)
+
+
+
 ## 参考项目
 
   - https://github.com/golang/protobuf
@@ -100,5 +104,5 @@ ok      github.com/fananchong/cstruct-go/benchmarks     2.975s
 
   - 支持嵌套struct
   - 支持类型int24、int40
-  - 支持过滤带Tag的字段
+  - 支持过滤不带Tag的字段
   
