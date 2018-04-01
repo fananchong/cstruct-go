@@ -1,6 +1,6 @@
 # cstruct-go
 
-c-style struct pack & unpack for golang
+a fast c-style struct packer & unpacker for golang
 
 ## 用法
 
