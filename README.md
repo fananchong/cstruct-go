@@ -8,19 +8,19 @@ c-style struct pack & unpack for golang
 
   ```go
   type mystruct1 struct {
-    F1  bool    `c:"bool"`
-    F2  float32 `c:"float"`
-    F3  float64 `c:"double"`
-    F4  string  `c:"string"`
-    F5  []byte  `c:"binary"`
-    F6  int8    `c:"int8"`
-    F7  int16   `c:"int16"`
-    F9  int32   `c:"int32"`
-    F11 int64   `c:"int64"`
-    F12 uint8   `c:"uint8"`
-    F13 uint16  `c:"uint16"`
-    F15 uint32  `c:"uint32"`
-    F17 uint64  `c:"uint64"`
+      F1  bool
+      F2  float32
+      F3  float64
+      F4  string
+      F5  []byte
+      F6  int8
+      F7  int16
+      F9  int32
+      F11 int64
+      F12 uint8
+      F13 uint16
+      F15 uint32
+      F17 uint64
   }
   ```
 
@@ -36,51 +36,58 @@ c-style struct pack & unpack for golang
   // 反序列化代码如下
   b := &mystruct1{}
   if err := cstruct.Unmarshal(buf_l, b); err != nil {
-    fmt.Println(err)
-    return
+      fmt.Println(err)
+      return
   }
   ```
+  
+  详细例子可以参考：[x_test.go](tests/x_test.go)
+  
 
 ## 字节序
 
 默认`小端`字节序。
 
-可以通过定义下列语句，改变字节序：
+可以通过定义下列语句，改变指定字节序：
 
 ```go
+// 指定小端
 cstruct.CurrentByteOrder = cstruct.LE
 ```
 
 或者
 
 ```go
+// 指定大端
 cstruct.CurrentByteOrder = cstruct.BE
 ```
 
 ## 基本类型
 
-cstruct类型 | go类型    | 内存说明
---------- | ------- | -----------------------
-bool      | bool    | 1 byte
-int8      | int8    | 1 byte
-uint8     | uint8   | 1 byte
-int16     | int16   | 2 byte
-uint16    | uint16  | 2 byte
-int32     | int32   | 4 byte
-uint32    | uint32  | 4 byte
-int64     | int64   | 8 byte
-uint64    | uint64  | 8 byte
-float     | float32 | 4 byte
-double    | float64 | 8 byte
-string    | string  | [2 byte] + [len(字符串) byte]
-binary    | []byte  | [2 byte] + [len(2进制数据) byte]
+go类型   | 内存说明
+------- | -----------------------
+bool    | 1 byte
+int8    | 1 byte
+uint8   | 1 byte
+int16   | 2 byte
+uint16  | 2 byte
+int32   | 4 byte
+uint32  | 4 byte
+int64   | 8 byte
+uint64  | 8 byte
+float32 | 4 byte
+float64 | 8 byte
+string  | [2 byte] + [len(字符串) byte]
+[]byte  | [2 byte] + [len(2进制数据) byte]
 
 ## 复杂类型
 
-- 支持struct嵌套（包括指针类型、及非指针类型）
-- 支持不带Tag字段（忽略掉，不参与序列化、反序列化）
+- 支持struct嵌套
 
-详细例子可以参考：[x_test.go](tests/x_test.go)
+## 指针类型
+
+- 支持struct指针
+
 
 ## 基准测试
 
@@ -100,4 +107,13 @@ ok      github.com/fananchong/cstruct-go/benchmarks     4.845s
 ## 参考项目
 
 - <https://github.com/golang/protobuf>
+
+
+## TODO
+
+- 支持 基本类型的Slice （参考protobuf）
+- 支持 基本类型的Map （参考protobuf）
+
+
+
 
