@@ -1,7 +1,6 @@
 package cstruct
 
 import (
-	"fmt"
 	"reflect"
 	"sync"
 )
@@ -61,7 +60,6 @@ type decoder func(p *Buffer, prop *Properties, base structPointer) error
 
 type Properties struct {
 	Name  string
-	tag   int
 	field field
 	enc   encoder
 	dec   decoder
@@ -74,67 +72,21 @@ func (p *Properties) init(typ reflect.Type, name, tag string, f *reflect.StructF
 	if f != nil {
 		p.field = toField(f)
 	}
-	if typ.Kind() == reflect.Ptr {
-		if t2 := typ.Elem(); t2.Kind() == reflect.Struct {
-			p.stype = t2
-			p.sprop = getPropertiesLocked(p.stype)
-			p.enc = (*Buffer).enc_substruct_ptr
-			p.dec = (*Buffer).dec_substruct_ptr
-		}
-		return
-	}
-	if typ.Kind() == reflect.Struct {
-		p.stype = typ
-		p.sprop = getPropertiesLocked(p.stype)
-		p.enc = (*Buffer).enc_substruct
-		p.dec = (*Buffer).dec_substruct
-		return
-	}
-	if p.Parse(typ, f) == 0 {
-		return
-	}
 	p.setEncAndDec(typ, f)
-
-}
-
-func (p *Properties) Parse(typ reflect.Type, f *reflect.StructField) int {
-	switch typ.Kind() {
-	case reflect.Bool:
-		p.tag = 1
-	case reflect.Int8, reflect.Uint8:
-		p.tag = 2
-	case reflect.Int16, reflect.Uint16:
-		p.tag = 3
-	case reflect.Int32, reflect.Uint32, reflect.Float32:
-		p.tag = 4
-	case reflect.Int64, reflect.Uint64, reflect.Float64:
-		p.tag = 5
-	case reflect.String:
-		p.tag = 6
-	case reflect.Slice:
-		switch t2 := typ.Elem(); t2.Kind() {
-		case reflect.Uint8: // []byte
-			p.tag = 7
-		}
-	}
-	if p.tag == 0 {
-		panic("cstruct: unknow type. field name =" + f.Name)
-	}
-	return p.tag
 }
 
 func (p *Properties) setEncAndDec(typ reflect.Type, f *reflect.StructField) {
 	p.enc = nil
 	p.dec = nil
 
-	switch p.tag {
-	case 1:
+	switch typ.Kind() {
+	case reflect.Bool: // bool
 		p.enc = (*Buffer).enc_bool
 		p.dec = (*Buffer).dec_bool
-	case 2:
+	case reflect.Int8, reflect.Uint8: // int8 uint8
 		p.enc = (*Buffer).enc_uint8
 		p.dec = (*Buffer).dec_uint8
-	case 3:
+	case reflect.Int16, reflect.Uint16: // int16 uint16
 		if CurrentByteOrder == LE {
 			p.enc = (*Buffer).enc_uint16le
 			p.dec = (*Buffer).dec_uint16le
@@ -142,7 +94,7 @@ func (p *Properties) setEncAndDec(typ reflect.Type, f *reflect.StructField) {
 			p.enc = (*Buffer).enc_uint16be
 			p.dec = (*Buffer).dec_uint16be
 		}
-	case 4:
+	case reflect.Int32, reflect.Uint32, reflect.Float32: // int32 uint32 float32
 		if CurrentByteOrder == LE {
 			p.enc = (*Buffer).enc_uint32le
 			p.dec = (*Buffer).dec_uint32le
@@ -150,7 +102,7 @@ func (p *Properties) setEncAndDec(typ reflect.Type, f *reflect.StructField) {
 			p.enc = (*Buffer).enc_uint32be
 			p.dec = (*Buffer).dec_uint32be
 		}
-	case 5:
+	case reflect.Int64, reflect.Uint64, reflect.Float64: // int64 uint64 float64
 		if CurrentByteOrder == LE {
 			p.enc = (*Buffer).enc_uint64le
 			p.dec = (*Buffer).dec_uint64le
@@ -158,13 +110,30 @@ func (p *Properties) setEncAndDec(typ reflect.Type, f *reflect.StructField) {
 			p.enc = (*Buffer).enc_uint64be
 			p.dec = (*Buffer).dec_uint64be
 		}
-	case 6:
+	case reflect.String: // string
 		p.enc = (*Buffer).enc_string
 		p.dec = (*Buffer).dec_string
-	case 7:
-		p.enc = (*Buffer).enc_binary
-		p.dec = (*Buffer).dec_binary
+	case reflect.Ptr: // struct ptr
+		if t2 := typ.Elem(); t2.Kind() == reflect.Struct {
+			p.stype = t2
+			p.sprop = getPropertiesLocked(p.stype)
+			p.enc = (*Buffer).enc_substruct_ptr
+			p.dec = (*Buffer).dec_substruct_ptr
+		} else {
+			panic("cstruct: unknow type. field name =" + f.Name)
+		}
+	case reflect.Struct: // struct
+		p.stype = typ
+		p.sprop = getPropertiesLocked(p.stype)
+		p.enc = (*Buffer).enc_substruct
+		p.dec = (*Buffer).dec_substruct
+	case reflect.Slice:
+		switch t2 := typ.Elem(); t2.Kind() {
+		case reflect.Uint8: // []byte
+			p.enc = (*Buffer).enc_binary
+			p.dec = (*Buffer).dec_binary
+		}
 	default:
-		panic(fmt.Sprintf("unknow type! type = %d", p.tag))
+		panic("cstruct: unknow type. field name = " + f.Name)
 	}
 }
