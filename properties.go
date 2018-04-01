@@ -111,21 +111,36 @@ func (p *Properties) setEncAndDec(typ reflect.Type, f *reflect.StructField, lock
 		switch p.tag {
 		case CTypeBool:
 			p.enc = (*Buffer).enc_bool
+			p.dec = (*Buffer).dec_bool
 			p.size = (*Buffer).size_bool
 		case CTypeInt8:
 			p.enc = (*Buffer).enc_uint8
+			p.dec = (*Buffer).dec_uint8
 			p.size = (*Buffer).size_uint8
 		case CTypeUInt8:
 			p.enc = (*Buffer).enc_uint8
+			p.dec = (*Buffer).dec_uint8
 			p.size = (*Buffer).size_uint8
 		case CTypeInt16:
-			//			if CurrentByteOrder == LE {
-			//				p.enc = (*Buffer).enc_int16le
-			//				p.size = (*Buffer).size_int16le
-			//			} else {
-			//				p.enc = (*Buffer).enc_int16be
-			//				p.size = (*Buffer).size_int16be
-			//			}
+			if CurrentByteOrder == LE {
+				p.enc = (*Buffer).enc_uint16le
+				p.dec = (*Buffer).dec_uint16le
+				p.size = (*Buffer).size_uint16
+			} else {
+				p.enc = (*Buffer).enc_uint16be
+				p.dec = (*Buffer).dec_uint16be
+				p.size = (*Buffer).size_uint16
+			}
+		case CTypeUInt16:
+			if CurrentByteOrder == LE {
+				p.enc = (*Buffer).enc_uint16le
+				p.dec = (*Buffer).dec_uint16le
+				p.size = (*Buffer).size_uint16
+			} else {
+				p.enc = (*Buffer).enc_uint16be
+				p.dec = (*Buffer).dec_uint16be
+				p.size = (*Buffer).size_uint16
+			}
 		default:
 			panic(fmt.Sprintf("unknow type! type = %s", p.tag))
 		}

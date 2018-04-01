@@ -5,3 +5,7 @@ const (
 	uint32PoolSize = 8
 	uint64PoolSize = 4
 )
+
+func Unmarshal(buf []byte, obj IStruct) error {
+	return NewBuffer(buf).Unmarshal(obj)
+}

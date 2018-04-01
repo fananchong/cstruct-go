@@ -18,12 +18,12 @@ func (this *_int16) PackBE(val int16) []byte {
 	}
 }
 func (this *_int16) UnpackLE(buf []byte) int16 {
-	v1 := int16(buf[1])
-	if (v1 & 0x80) == 0x80 {
-		return int16(0x7FFF - UInt16.UnpackLE(buf))
-	} else {
-		return int16(UInt16.UnpackLE(buf))
-	}
+	//	v1 := int16(buf[1])
+	//	if (v1 & 0x80) == 0x80 {
+	//		return int16(0x7FFF - UInt16.UnpackLE(buf))
+	//	} else {
+	return int16(UInt16.UnpackLE(buf))
+	//	}
 }
 func (this *_int16) UnpackBE(buf []byte) int16 {
 	v1 := int16(buf[0])
