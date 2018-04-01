@@ -2,6 +2,7 @@ package cstruct
 
 import (
 	"reflect"
+	"unsafe"
 )
 
 type Buffer struct {
@@ -57,7 +58,7 @@ func (o *Buffer) enc_struct(prop *StructProperties, base structPointer) error {
 	return nil
 }
 
-func enc_bool(o *Buffer, p *Properties, base structPointer) error {
+func (o *Buffer) enc_bool(p *Properties, base structPointer) error {
 	v := structPointer_BoolVal(base, p.field)
 	if v == nil {
 		return ErrNil
@@ -70,6 +71,19 @@ func enc_bool(o *Buffer, p *Properties, base structPointer) error {
 	return nil
 }
 
-func size_bool(o *Buffer, prop *Properties, base structPointer) int {
+func (o *Buffer) size_bool(prop *Properties, base structPointer) int {
+	return 1
+}
+
+func (o *Buffer) enc_uint8(p *Properties, base structPointer) error {
+	v := (*uint8)(unsafe.Pointer(uintptr(base) + uintptr(p.field)))
+	if v == nil {
+		return ErrNil
+	}
+	o.buf = append(o.buf, uint8(*v))
+	return nil
+}
+
+func (o *Buffer) size_uint8(prop *Properties, base structPointer) int {
 	return 1
 }
