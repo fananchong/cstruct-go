@@ -101,25 +101,13 @@ func (p *Properties) Parse(s string) int {
 	switch s {
 	case CTypeBool:
 		p.tag = 1
-	case CTypeInt8:
+	case CTypeInt8, CTypeUInt8:
 		p.tag = 2
-	case CTypeUInt8:
-		p.tag = 2
-	case CTypeInt16:
+	case CTypeInt16, CTypeUInt16:
 		p.tag = 3
-	case CTypeUInt16:
+	case CTypeInt32, CTypeUInt32, CTypeFloat:
 		p.tag = 4
-	case CTypeInt32:
-		p.tag = 4
-	case CTypeUInt32:
-		p.tag = 4
-	case CTypeInt64:
-		p.tag = 5
-	case CTypeUInt64:
-		p.tag = 5
-	case CTypeFloat:
-		p.tag = 4
-	case CTypeDouble:
+	case CTypeInt64, CTypeUInt64, CTypeDouble:
 		p.tag = 5
 	case CTypeString:
 		p.tag = 6

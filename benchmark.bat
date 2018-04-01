@@ -3,5 +3,9 @@ set GOBIN=%~dp0\\bin
 echo %GOPATH%
 echo %GOBIN%
 
+set CURPATH=%~dp0
+
 cd benchmarks
-go test -test.bench=".*" -count=1
+call go test -test.bench=".*" -count=1
+
+cd %CURPATH%

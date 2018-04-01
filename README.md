@@ -101,6 +101,3 @@ ok      github.com/fananchong/cstruct-go/benchmarks     4.845s
 
 - <https://github.com/golang/protobuf>
 
-## TODO
-
-- 支持类型int24、int40
