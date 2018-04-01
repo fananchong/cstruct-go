@@ -15,7 +15,7 @@ type mystruct3 struct {
 type mystruct2 struct {
 	F3 float64 `c:"double"`
 	F4 string  `c:"string"`
-	S1 *mystruct3
+	S1 mystruct3
 }
 
 type mystruct1 struct {
@@ -40,7 +40,7 @@ type mystruct1 struct {
 }
 
 func Test_LE1(t *testing.T) {
-	a := &mystruct1{S0: &mystruct2{S1: &mystruct3{}}}
+	a := &mystruct1{S0: &mystruct2{}}
 	a.F1 = true
 	a.F2 = 0.98
 	a.F3 = 999888888.777
@@ -63,7 +63,7 @@ func Test_LE1(t *testing.T) {
 }
 
 func Test_LE2(t *testing.T) {
-	a := &mystruct1{S0: &mystruct2{S1: &mystruct3{}}}
+	a := &mystruct1{S0: &mystruct2{}}
 	a.F1 = false
 	a.F2 = -0.98
 	a.F3 = -999888888.777
@@ -86,7 +86,7 @@ func Test_LE2(t *testing.T) {
 }
 
 func Test_BE1(t *testing.T) {
-	a := &mystruct1{S0: &mystruct2{S1: &mystruct3{}}}
+	a := &mystruct1{S0: &mystruct2{}}
 	a.F1 = true
 	a.F2 = 0.98
 	a.F3 = 999888888.777
@@ -109,7 +109,7 @@ func Test_BE1(t *testing.T) {
 }
 
 func Test_BE2(t *testing.T) {
-	a := &mystruct1{S0: &mystruct2{S1: &mystruct3{}}}
+	a := &mystruct1{S0: &mystruct2{}}
 	a.F1 = false
 	a.F2 = -0.98
 	a.F3 = -999888888.777
@@ -134,7 +134,7 @@ func Test_BE2(t *testing.T) {
 func test1(t *testing.T, a *mystruct1, order cstruct.ByteOrder) {
 	cstruct.CurrentByteOrder = order
 	buf_l, _ := cstruct.Marshal(a)
-	b := &mystruct1{S0: &mystruct2{S1: &mystruct3{}}}
+	b := &mystruct1{S0: &mystruct2{}}
 	if err := cstruct.Unmarshal(buf_l, b); err != nil {
 		fmt.Println(err)
 		t.Error("出错啦！#0")

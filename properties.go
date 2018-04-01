@@ -69,10 +69,6 @@ type Properties struct {
 	sprop *StructProperties
 }
 
-func (p *Properties) Init(typ reflect.Type, name, tag string, f *reflect.StructField) {
-	p.init(typ, name, tag, f)
-}
-
 func (p *Properties) init(typ reflect.Type, name, tag string, f *reflect.StructField) {
 	p.Name = name
 	if f != nil {
@@ -82,10 +78,17 @@ func (p *Properties) init(typ reflect.Type, name, tag string, f *reflect.StructF
 		if t2 := typ.Elem(); t2.Kind() == reflect.Struct {
 			p.stype = t2
 			p.sprop = getPropertiesLocked(p.stype)
-			p.enc = (*Buffer).enc_substruct
-			p.dec = (*Buffer).dec_substruct
-			return
+			p.enc = (*Buffer).enc_substruct_ptr
+			p.dec = (*Buffer).dec_substruct_ptr
 		}
+		return
+	}
+	if typ.Kind() == reflect.Struct {
+		p.stype = typ
+		p.sprop = getPropertiesLocked(p.stype)
+		p.enc = (*Buffer).enc_substruct
+		p.dec = (*Buffer).dec_substruct
+		return
 	}
 	if p.Parse(tag) == 0 {
 		return

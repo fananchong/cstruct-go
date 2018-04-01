@@ -400,18 +400,33 @@ func (o *Buffer) dec_binary(p *Properties, base structPointer) error {
 }
 
 // struct
-func (o *Buffer) enc_substruct(p *Properties, base structPointer) error {
+func (o *Buffer) enc_substruct_ptr(p *Properties, base structPointer) error {
 	b := structPointer_GetStructPointer(base, p.field)
 	if structPointer_IsNil(b) {
 		return ErrNil
 	}
 	return o.enc_struct(p.sprop, b)
 }
-func (o *Buffer) dec_substruct(p *Properties, base structPointer) error {
+func (o *Buffer) dec_substruct_ptr(p *Properties, base structPointer) error {
 	bas := structPointer_GetStructPointer(base, p.field)
 	if structPointer_IsNil(bas) {
 		bas = toStructPointer(reflect.New(p.stype))
 		structPointer_SetStructPointer(base, p.field, bas)
+	}
+	return o.unmarshalType(p.stype, p.sprop, bas)
+}
+
+func (o *Buffer) enc_substruct(p *Properties, base structPointer) error {
+	b := structPointer(unsafe.Pointer(uintptr(base) + uintptr(p.field)))
+	if structPointer_IsNil(b) {
+		return ErrNil
+	}
+	return o.enc_struct(p.sprop, b)
+}
+func (o *Buffer) dec_substruct(p *Properties, base structPointer) error {
+	bas := structPointer(unsafe.Pointer(uintptr(base) + uintptr(p.field)))
+	if structPointer_IsNil(bas) {
+		return ErrNil
 	}
 	return o.unmarshalType(p.stype, p.sprop, bas)
 }
