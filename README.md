@@ -72,8 +72,8 @@ int64     | int64   | 8 byte
 uint64    | uint64  | 8 byte
 float     | float32 | 4 byte
 double    | float64 | 8 byte
-string    | string  | [2 byte] + [len(字符串)]
-binary    | []byte  | [2 byte] + [len(2进制数据)]
+string    | string  | [2 byte] + [len(字符串) byte]
+binary    | []byte  | [2 byte] + [len(2进制数据) byte]
 
 ## 复杂类型
 
