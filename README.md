@@ -96,3 +96,9 @@ ok      github.com/fananchong/cstruct-go/benchmarks     2.975s
   - https://github.com/golang/protobuf
   
   
+## TODO
+
+  - 支持嵌套struct
+  - 支持类型int24、int40
+  - 支持过滤带Tag的字段
+  
