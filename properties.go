@@ -2,7 +2,6 @@ package cstruct
 
 import (
 	"fmt"
-	"os"
 	"reflect"
 	"sync"
 )
@@ -51,9 +50,6 @@ func getPropertiesLocked(t reflect.Type) *StructProperties {
 		name := f.Name
 		p.init(f.Type, name, f.Tag.Get("c"), &f, false)
 		prop.Prop[i] = p
-		if p.enc == nil {
-			fmt.Fprintln(os.Stderr, "cstruct: no encoder for", f.Name, f.Type.String(), "[GetProperties]")
-		}
 	}
 
 	return prop
@@ -86,11 +82,13 @@ func (p *Properties) init(typ reflect.Type, name, tag string, f *reflect.StructF
 	if f != nil {
 		p.field = toField(f)
 	}
-	p.Parse(tag)
+	if p.Parse(tag) == 0 {
+		return
+	}
 	p.setEncAndDec(typ, f, lockGetProp)
 }
 
-func (p *Properties) Parse(s string) {
+func (p *Properties) Parse(s string) int {
 	switch s {
 	case CTypeBool:
 		p.tag = 1
@@ -119,8 +117,8 @@ func (p *Properties) Parse(s string) {
 	case CTypeBinary:
 		p.tag = 7
 	default:
-		panic(fmt.Sprintf("unknow type! type = %s", s))
 	}
+	return p.tag
 }
 
 func (p *Properties) setEncAndDec(typ reflect.Type, f *reflect.StructField, lockGetProp bool) {

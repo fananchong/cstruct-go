@@ -1,12 +1,15 @@
-package main
+package mytest
 
 import (
 	"fmt"
+	"sync"
+	"testing"
 
 	cstruct "github.com/fananchong/cstruct-go"
 )
 
 type mystruct1 struct {
+	N0  map[int]string
 	F1  bool    `c:"bool"`
 	F2  float32 `c:"float"`
 	F3  float64 `c:"double"`
@@ -14,15 +17,18 @@ type mystruct1 struct {
 	F5  []byte  `c:"binary"`
 	F6  int8    `c:"int8"`
 	F7  int16   `c:"int16"`
-	F9  int32   `c:"int32"`
-	F11 int64   `c:"int64"`
-	F12 uint8   `c:"uint8"`
-	F13 uint16  `c:"uint16"`
-	F15 uint32  `c:"uint32"`
-	F17 uint64  `c:"uint64"`
+	N8  int32
+	F9  int32 `c:"int32"`
+	N10 int64
+	F11 int64  `c:"int64"`
+	F12 uint8  `c:"uint8"`
+	F13 uint16 `c:"uint16"`
+	F15 uint32 `c:"uint32"`
+	F17 uint64 `c:"uint64"`
+	N18 sync.Map
 }
 
-func main() {
+func Test_LE1(t *testing.T) {
 	a := &mystruct1{}
 	a.F1 = true
 	a.F2 = 0.98
@@ -37,11 +43,11 @@ func main() {
 	a.F13 = 32767
 	a.F15 = 4294967295
 	a.F17 = 18446744073709551615
-	test1(a, cstruct.LE)
+	test1(t, a, cstruct.LE)
+}
 
-	fmt.Println("\n\n")
-
-	a = &mystruct1{}
+func Test_LE2(t *testing.T) {
+	a := &mystruct1{}
 	a.F1 = false
 	a.F2 = -0.98
 	a.F3 = -999888888.777
@@ -55,11 +61,11 @@ func main() {
 	a.F13 = 1
 	a.F15 = 1
 	a.F17 = 1
-	test1(a, cstruct.LE)
+	test1(t, a, cstruct.LE)
+}
 
-	fmt.Println("\n\n")
-
-	a = &mystruct1{}
+func Test_BE1(t *testing.T) {
+	a := &mystruct1{}
 	a.F1 = true
 	a.F2 = 0.98
 	a.F3 = 999888888.777
@@ -73,11 +79,11 @@ func main() {
 	a.F13 = 32767
 	a.F15 = 4294967295
 	a.F17 = 18446744073709551615
-	test1(a, cstruct.BE)
+	test1(t, a, cstruct.BE)
+}
 
-	fmt.Println("\n\n")
-
-	a = &mystruct1{}
+func Test_BE2(t *testing.T) {
+	a := &mystruct1{}
 	a.F1 = false
 	a.F2 = -0.98
 	a.F3 = -999888888.777
@@ -91,32 +97,74 @@ func main() {
 	a.F13 = 1
 	a.F15 = 1
 	a.F17 = 1
-	test1(a, cstruct.BE)
-
+	test1(t, a, cstruct.BE)
 }
 
-func test1(a *mystruct1, order cstruct.ByteOrder) {
+func test1(t *testing.T, a *mystruct1, order cstruct.ByteOrder) {
 	cstruct.CurrentByteOrder = order
 	buf_l, _ := cstruct.Marshal(a)
-	fmt.Println("Buf(l):", buf_l)
 	b := &mystruct1{}
 	if err := cstruct.Unmarshal(buf_l, b); err != nil {
 		fmt.Println(err)
+		t.Error("出错啦！#0")
 		return
 	}
-	fmt.Println("NewVal(l):", *b)
-
-	fmt.Println("b.F1 =", b.F1)
-	fmt.Println("b.F2 =", b.F2)
-	fmt.Println("b.F3 =", b.F3)
-	fmt.Println("b.F4 =", b.F4)
-	fmt.Println("b.F5 =", b.F5)
-	fmt.Println("b.F6 =", b.F6)
-	fmt.Println("b.F7 =", b.F7)
-	fmt.Println("b.F9 =", b.F9)
-	fmt.Println("b.F11 =", b.F11)
-	fmt.Println("b.F12 =", b.F12)
-	fmt.Println("b.F13 =", b.F13)
-	fmt.Println("b.F15 =", b.F15)
-	fmt.Println("b.F17 =", b.F17)
+	if a.F1 != b.F1 {
+		t.Error("出错啦！#1")
+		return
+	}
+	if a.F2 != b.F2 {
+		t.Error("出错啦！#2")
+		return
+	}
+	if a.F3 != b.F3 {
+		t.Error("出错啦！#3")
+		return
+	}
+	if a.F4 != b.F4 {
+		t.Error("出错啦！#4")
+		return
+	}
+	if len(a.F5) != len(b.F5) {
+		t.Error("出错啦！#5")
+		return
+	}
+	for i := 0; i < len(a.F5); i++ {
+		if a.F5[i] != a.F5[i] {
+			t.Error("出错啦！#5")
+			return
+		}
+	}
+	if a.F6 != b.F6 {
+		t.Error("出错啦！#6")
+		return
+	}
+	if a.F7 != b.F7 {
+		t.Error("出错啦！#7")
+		return
+	}
+	if a.F9 != b.F9 {
+		t.Error("出错啦！#9")
+		return
+	}
+	if a.F11 != b.F11 {
+		t.Error("出错啦！#11")
+		return
+	}
+	if a.F12 != b.F12 {
+		t.Error("出错啦！#12")
+		return
+	}
+	if a.F13 != b.F13 {
+		t.Error("出错啦！#13")
+		return
+	}
+	if a.F15 != b.F15 {
+		t.Error("出错啦！#15")
+		return
+	}
+	if a.F17 != b.F17 {
+		t.Error("出错啦！#17")
+		return
+	}
 }
