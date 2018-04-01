@@ -398,3 +398,20 @@ func (o *Buffer) dec_binary(p *Properties, base structPointer) error {
 	*v = append(buf)
 	return nil
 }
+
+// struct
+func (o *Buffer) enc_substruct(p *Properties, base structPointer) error {
+	b := structPointer_GetStructPointer(base, p.field)
+	if structPointer_IsNil(b) {
+		return ErrNil
+	}
+	return o.enc_struct(p.sprop, b)
+}
+func (o *Buffer) dec_substruct(p *Properties, base structPointer) error {
+	bas := structPointer_GetStructPointer(base, p.field)
+	if structPointer_IsNil(bas) {
+		bas = toStructPointer(reflect.New(p.stype))
+		structPointer_SetStructPointer(base, p.field, bas)
+	}
+	return o.unmarshalType(p.stype, p.sprop, bas)
+}

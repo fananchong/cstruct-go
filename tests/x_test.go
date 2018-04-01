@@ -8,6 +8,16 @@ import (
 	cstruct "github.com/fananchong/cstruct-go"
 )
 
+type mystruct3 struct {
+	F5 []byte `c:"binary"`
+}
+
+type mystruct2 struct {
+	F3 float64 `c:"double"`
+	F4 string  `c:"string"`
+	S1 *mystruct3
+}
+
 type mystruct1 struct {
 	N0  map[int]string
 	F1  bool    `c:"bool"`
@@ -23,13 +33,14 @@ type mystruct1 struct {
 	F11 int64  `c:"int64"`
 	F12 uint8  `c:"uint8"`
 	F13 uint16 `c:"uint16"`
+	S0  *mystruct2
 	F15 uint32 `c:"uint32"`
 	F17 uint64 `c:"uint64"`
-	N18 sync.Map
+	N18 *sync.Map
 }
 
 func Test_LE1(t *testing.T) {
-	a := &mystruct1{}
+	a := &mystruct1{S0: &mystruct2{S1: &mystruct3{}}}
 	a.F1 = true
 	a.F2 = 0.98
 	a.F3 = 999888888.777
@@ -43,11 +54,16 @@ func Test_LE1(t *testing.T) {
 	a.F13 = 32767
 	a.F15 = 4294967295
 	a.F17 = 18446744073709551615
+
+	a.S0.F3 = 988.07
+	a.S0.F4 = "world1"
+	a.S0.S1.F5 = []byte("world1")
+
 	test1(t, a, cstruct.LE)
 }
 
 func Test_LE2(t *testing.T) {
-	a := &mystruct1{}
+	a := &mystruct1{S0: &mystruct2{S1: &mystruct3{}}}
 	a.F1 = false
 	a.F2 = -0.98
 	a.F3 = -999888888.777
@@ -61,11 +77,16 @@ func Test_LE2(t *testing.T) {
 	a.F13 = 1
 	a.F15 = 1
 	a.F17 = 1
+
+	a.S0.F3 = 988.07
+	a.S0.F4 = "world2"
+	a.S0.S1.F5 = []byte("world2")
+
 	test1(t, a, cstruct.LE)
 }
 
 func Test_BE1(t *testing.T) {
-	a := &mystruct1{}
+	a := &mystruct1{S0: &mystruct2{S1: &mystruct3{}}}
 	a.F1 = true
 	a.F2 = 0.98
 	a.F3 = 999888888.777
@@ -79,11 +100,16 @@ func Test_BE1(t *testing.T) {
 	a.F13 = 32767
 	a.F15 = 4294967295
 	a.F17 = 18446744073709551615
+
+	a.S0.F3 = 988.07
+	a.S0.F4 = "world3"
+	a.S0.S1.F5 = []byte("world3")
+
 	test1(t, a, cstruct.BE)
 }
 
 func Test_BE2(t *testing.T) {
-	a := &mystruct1{}
+	a := &mystruct1{S0: &mystruct2{S1: &mystruct3{}}}
 	a.F1 = false
 	a.F2 = -0.98
 	a.F3 = -999888888.777
@@ -97,13 +123,18 @@ func Test_BE2(t *testing.T) {
 	a.F13 = 1
 	a.F15 = 1
 	a.F17 = 1
+
+	a.S0.F3 = 988.07
+	a.S0.F4 = "world4"
+	a.S0.S1.F5 = []byte("world4")
+
 	test1(t, a, cstruct.BE)
 }
 
 func test1(t *testing.T, a *mystruct1, order cstruct.ByteOrder) {
 	cstruct.CurrentByteOrder = order
 	buf_l, _ := cstruct.Marshal(a)
-	b := &mystruct1{}
+	b := &mystruct1{S0: &mystruct2{S1: &mystruct3{}}}
 	if err := cstruct.Unmarshal(buf_l, b); err != nil {
 		fmt.Println(err)
 		t.Error("出错啦！#0")
@@ -166,5 +197,26 @@ func test1(t *testing.T, a *mystruct1, order cstruct.ByteOrder) {
 	if a.F17 != b.F17 {
 		t.Error("出错啦！#17")
 		return
+	}
+
+	if a.S0.F3 != b.S0.F3 {
+		t.Error("出错啦！#18")
+		return
+	}
+
+	if a.S0.F4 != b.S0.F4 {
+		t.Error("出错啦！#19")
+		return
+	}
+
+	if len(a.S0.S1.F5) != len(b.S0.S1.F5) {
+		t.Error("出错啦！#20")
+		return
+	}
+	for i := 0; i < len(a.S0.S1.F5); i++ {
+		if a.S0.S1.F5[i] != b.S0.S1.F5[i] {
+			t.Error("出错啦！#20")
+			return
+		}
 	}
 }
