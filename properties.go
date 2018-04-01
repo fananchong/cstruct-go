@@ -118,6 +118,8 @@ func (p *Properties) Parse(s string) {
 		p.tag = 6
 	case CTypeBinary:
 		p.tag = 7
+	default:
+		panic(fmt.Sprintf("unknow type! type = %s", s))
 	}
 }
 
@@ -170,7 +172,7 @@ func (p *Properties) setEncAndDec(typ reflect.Type, f *reflect.StructField, lock
 			p.enc = (*Buffer).enc_binary
 			p.dec = (*Buffer).dec_binary
 		default:
-			panic(fmt.Sprintf("unknow type! type = %s", p.tag))
+			panic(fmt.Sprintf("unknow type! type = %d", p.tag))
 		}
 	}
 }
