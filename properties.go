@@ -87,13 +87,8 @@ func (p *Properties) setEncAndDec(typ reflect.Type, f *reflect.StructField) {
 		p.enc = (*Buffer).enc_uint8
 		p.dec = (*Buffer).dec_uint8
 	case reflect.Int16, reflect.Uint16: // int16 uint16
-		if CurrentByteOrder == LE {
-			p.enc = (*Buffer).enc_uint16le
-			p.dec = (*Buffer).dec_uint16le
-		} else {
-			p.enc = (*Buffer).enc_uint16be
-			p.dec = (*Buffer).dec_uint16be
-		}
+		p.enc = (*Buffer).enc_uint16
+		p.dec = (*Buffer).dec_uint16
 	case reflect.Int32, reflect.Uint32, reflect.Float32: // int32 uint32 float32
 		if CurrentByteOrder == LE {
 			p.enc = (*Buffer).enc_uint32le
@@ -130,8 +125,11 @@ func (p *Properties) setEncAndDec(typ reflect.Type, f *reflect.StructField) {
 	case reflect.Slice:
 		switch t2 := typ.Elem(); t2.Kind() {
 		case reflect.Uint8: // []byte
-			p.enc = (*Buffer).enc_binary
-			p.dec = (*Buffer).dec_binary
+			p.enc = (*Buffer).enc_slice_byte
+			p.dec = (*Buffer).dec_slice_byte
+		case reflect.Bool: // []bool
+			p.enc = (*Buffer).enc_slice_bool
+			p.dec = (*Buffer).dec_slice_bool
 		}
 	default:
 		panic("cstruct: unknow type. field name = " + f.Name)
