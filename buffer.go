@@ -78,20 +78,26 @@ func (o *Buffer) enc_bool(p *Properties, base structPointer) error {
 	if v == nil {
 		return ErrNil
 	}
-	o.writeBool(*v)
+	x := 0
+	if *v {
+		x = 1
+	}
+	o.buf = append(o.buf, uint8(x))
 	return nil
 }
 
 func (o *Buffer) dec_bool(p *Properties, base structPointer) error {
-	u, err := o.readBool()
-	if err != nil {
-		return err
+	i := o.index + 1
+	if i < 0 || i > len(o.buf) {
+		return io.ErrUnexpectedEOF
 	}
+	o.index = i
+	u := uint8(o.buf[i-1])
 	v := structPointer_BoolVal(base, p.field)
 	if v == nil {
 		return ErrNil
 	}
-	*v = u
+	*v = (u != 0)
 	return nil
 }
 
@@ -101,15 +107,17 @@ func (o *Buffer) enc_uint8(p *Properties, base structPointer) error {
 	if v == nil {
 		return ErrNil
 	}
-	o.writeUInt8(*v)
+	o.buf = append(o.buf, *v)
 	return nil
 }
 
 func (o *Buffer) dec_uint8(p *Properties, base structPointer) error {
-	u, err := o.readUInt8()
-	if err != nil {
-		return err
+	i := o.index + 1
+	if i < 0 || i > len(o.buf) {
+		return io.ErrUnexpectedEOF
 	}
+	o.index = i
+	u := uint8(o.buf[i-1])
 	v := (*uint8)(unsafe.Pointer(uintptr(base) + uintptr(p.field)))
 	if v == nil {
 		return ErrNil
@@ -376,7 +384,11 @@ func (o *Buffer) enc_slice_bool(p *Properties, base structPointer) error {
 	ln := len(*v)
 	o.writeUInt16(uint16(ln))
 	for i := 0; i < ln; i++ {
-		o.writeBool((*v)[i])
+		x := 0
+		if (*v)[i] {
+			x = 1
+		}
+		o.buf = append(o.buf, uint8(x))
 	}
 	return nil
 }
@@ -390,41 +402,63 @@ func (o *Buffer) dec_slice_bool(p *Properties, base structPointer) error {
 	if err != nil {
 		return err
 	}
+	end := o.index + int(nb)
+	if end < o.index || end > len(o.buf) {
+		return io.ErrUnexpectedEOF
+	}
 	for i := 0; i < int(nb); i++ {
-		tmpv, err := o.readUInt8()
-		if err != nil {
-			return err
+		u := uint8(o.buf[o.index+i])
+		*v = append(*v, u != 0)
+	}
+	o.index = end
+	return nil
+}
+
+// []uint16
+func (o *Buffer) enc_slice_uint16(p *Properties, base structPointer) error {
+	v := (*[]uint16)(unsafe.Pointer(uintptr(base) + uintptr(p.field)))
+	if v == nil {
+		return ErrNil
+	}
+	ln := len(*v)
+	o.writeUInt16(uint16(ln))
+	for i := 0; i < ln; i++ {
+		val := (*v)[i]
+		if CurrentByteOrder == LE {
+			o.buf = append(o.buf, uint8(val), uint8(val>>8))
+		} else {
+			o.buf = append(o.buf, uint8(val>>8), uint8(val))
 		}
-		*v = append(*v, tmpv != 0)
 	}
 	return nil
 }
 
-func (o *Buffer) writeBool(val bool) {
-	x := 0
-	if val {
-		x = 1
+func (o *Buffer) dec_slice_uint16(p *Properties, base structPointer) error {
+	v := (*[]uint16)(unsafe.Pointer(uintptr(base) + uintptr(p.field)))
+	if v == nil {
+		return ErrNil
 	}
-	o.writeUInt8(uint8(x))
-}
-
-func (o *Buffer) readBool() (bool, error) {
-	u, err := o.readUInt8()
-	return u != 0, err
-}
-
-func (o *Buffer) writeUInt8(val uint8) {
-	o.buf = append(o.buf, val)
-}
-
-func (o *Buffer) readUInt8() (uint8, error) {
-	i := o.index + 1
-	if i < 0 || i > len(o.buf) {
-		return 0, io.ErrUnexpectedEOF
+	nb, err := o.readUInt16()
+	if err != nil {
+		return err
 	}
-	o.index = i
-	u := uint8(o.buf[i-1])
-	return u, nil
+	end := o.index + int(nb)*2
+	if end < o.index || end > len(o.buf) {
+		return io.ErrUnexpectedEOF
+	}
+	for i := 0; i < int(nb); i++ {
+		var u uint16 = 0
+		if CurrentByteOrder == LE {
+			u = uint16(o.buf[o.index+i*2])
+			u |= uint16(o.buf[o.index+i*2+1]) << 8
+		} else {
+			u = uint16(o.buf[o.index+i*2]) << 8
+			u |= uint16(o.buf[o.index+i*2+1])
+		}
+		*v = append(*v, u)
+	}
+	o.index = end
+	return nil
 }
 
 func (o *Buffer) writeUInt16(val uint16) {

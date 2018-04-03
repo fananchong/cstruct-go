@@ -35,6 +35,8 @@ type mystruct1 struct {
 	F18 []bool
 	F19 []int8
 	F20 []uint8
+	F21 []int16
+	F22 []uint16
 }
 
 func Test_LE1(t *testing.T) {
@@ -49,12 +51,14 @@ func Test_LE1(t *testing.T) {
 	a.F9 = -2147483648
 	a.F11 = -9223372036854775808
 	a.F12 = 255
-	a.F13 = 32767
+	a.F13 = 65535
 	a.F15 = 4294967295
 	a.F17 = 18446744073709551615
 	a.F18 = []bool{false, true, true, false, true}
 	a.F19 = []int8{1, -1, 0, 127, -128}
 	a.F20 = []uint8{0, 1, 2, 127, 255}
+	a.F21 = []int16{1, -1, 0, 32767, -32768}
+	a.F22 = []uint16{0, 1, 2, 32767, 65535}
 
 	a.S0.F3 = 988.07
 	a.S0.F4 = "world1"
@@ -81,6 +85,8 @@ func Test_LE2(t *testing.T) {
 	a.F18 = []bool{}
 	a.F19 = []int8{}
 	a.F20 = []uint8{}
+	a.F21 = []int16{}
+	a.F22 = []uint16{}
 
 	a.S0.F3 = 988.07
 	a.S0.F4 = "world2"
@@ -101,12 +107,14 @@ func Test_BE1(t *testing.T) {
 	a.F9 = -2147483648
 	a.F11 = -9223372036854775808
 	a.F12 = 255
-	a.F13 = 32767
+	a.F13 = 65535
 	a.F15 = 4294967295
 	a.F17 = 18446744073709551615
 	a.F18 = []bool{false, true, true, false, true}
 	a.F19 = []int8{1, -1, 0, 127, -128}
 	a.F20 = []uint8{0, 1, 2, 127, 255}
+	a.F21 = []int16{1, -1, 0, 32767, -32768}
+	a.F22 = []uint16{0, 1, 2, 32767, 65535}
 
 	a.S0.F3 = 988.07
 	a.S0.F4 = "world3"
@@ -133,6 +141,8 @@ func Test_BE2(t *testing.T) {
 	a.F18 = []bool{}
 	a.F19 = []int8{}
 	a.F20 = []uint8{}
+	a.F21 = []int16{}
+	a.F22 = []uint16{}
 
 	a.S0.F3 = 988.07
 	a.S0.F4 = "world4"
@@ -278,4 +288,28 @@ func test1(t *testing.T, a *mystruct1, order cstruct.ByteOrder) {
 		}
 	}
 	t.Log(b.F20)
+
+	if len(a.F21) != len(b.F21) {
+		t.Error("出错啦！#24")
+		return
+	}
+	for i := 0; i < len(a.F21); i++ {
+		if a.F21[i] != b.F21[i] {
+			t.Error("出错啦！#24")
+			return
+		}
+	}
+	t.Log(b.F21)
+
+	if len(a.F22) != len(b.F22) {
+		t.Error("出错啦！#25")
+		return
+	}
+	for i := 0; i < len(a.F22); i++ {
+		if a.F22[i] != b.F22[i] {
+			t.Error("出错啦！#25")
+			return
+		}
+	}
+	t.Log(b.F22)
 }
