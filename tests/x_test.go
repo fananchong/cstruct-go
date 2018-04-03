@@ -37,6 +37,10 @@ type mystruct1 struct {
 	F20 []uint8
 	F21 []int16
 	F22 []uint16
+	F23 []int32
+	F24 []uint32
+	F25 []int64
+	F26 []uint64
 }
 
 func Test_LE1(t *testing.T) {
@@ -59,6 +63,10 @@ func Test_LE1(t *testing.T) {
 	a.F20 = []uint8{0, 1, 2, 127, 255}
 	a.F21 = []int16{1, -1, 0, 32767, -32768}
 	a.F22 = []uint16{0, 1, 2, 32767, 65535}
+	a.F23 = []int32{1, -1, 0, 2147483647, -2147483648}
+	a.F24 = []uint32{0, 1, 2, 2147483647, 4294967295}
+	a.F25 = []int64{1, -1, 0, 9223372036854775807, -9223372036854775808}
+	a.F26 = []uint64{0, 1, 2, 9223372036854775807, 18446744073709551615}
 
 	a.S0.F3 = 988.07
 	a.S0.F4 = "world1"
@@ -87,6 +95,10 @@ func Test_LE2(t *testing.T) {
 	a.F20 = []uint8{}
 	a.F21 = []int16{}
 	a.F22 = []uint16{}
+	a.F23 = []int32{}
+	a.F24 = []uint32{}
+	a.F25 = []int64{}
+	a.F26 = []uint64{}
 
 	a.S0.F3 = 988.07
 	a.S0.F4 = "world2"
@@ -115,6 +127,10 @@ func Test_BE1(t *testing.T) {
 	a.F20 = []uint8{0, 1, 2, 127, 255}
 	a.F21 = []int16{1, -1, 0, 32767, -32768}
 	a.F22 = []uint16{0, 1, 2, 32767, 65535}
+	a.F23 = []int32{1, -1, 0, 2147483647, -2147483648}
+	a.F24 = []uint32{0, 1, 2, 2147483647, 4294967295}
+	a.F25 = []int64{1, -1, 0, 9223372036854775807, -9223372036854775808}
+	a.F26 = []uint64{0, 1, 2, 9223372036854775807, 18446744073709551615}
 
 	a.S0.F3 = 988.07
 	a.S0.F4 = "world3"
@@ -143,6 +159,10 @@ func Test_BE2(t *testing.T) {
 	a.F20 = []uint8{}
 	a.F21 = []int16{}
 	a.F22 = []uint16{}
+	a.F23 = []int32{}
+	a.F24 = []uint32{}
+	a.F25 = []int64{}
+	a.F26 = []uint64{}
 
 	a.S0.F3 = 988.07
 	a.S0.F4 = "world4"
@@ -312,4 +332,52 @@ func test1(t *testing.T, a *mystruct1, order cstruct.ByteOrder) {
 		}
 	}
 	t.Log(b.F22)
+
+	if len(a.F23) != len(b.F23) {
+		t.Error("出错啦！#26")
+		return
+	}
+	for i := 0; i < len(a.F23); i++ {
+		if a.F23[i] != b.F23[i] {
+			t.Error("出错啦！#26")
+			return
+		}
+	}
+	t.Log(b.F23)
+
+	if len(a.F24) != len(b.F24) {
+		t.Error("出错啦！#27")
+		return
+	}
+	for i := 0; i < len(a.F24); i++ {
+		if a.F24[i] != b.F24[i] {
+			t.Error("出错啦！#27")
+			return
+		}
+	}
+	t.Log(b.F24)
+
+	if len(a.F25) != len(b.F25) {
+		t.Error("出错啦！#28")
+		return
+	}
+	for i := 0; i < len(a.F25); i++ {
+		if a.F25[i] != b.F25[i] {
+			t.Error("出错啦！#28")
+			return
+		}
+	}
+	t.Log(b.F25)
+
+	if len(a.F26) != len(b.F26) {
+		t.Error("出错啦！#29")
+		return
+	}
+	for i := 0; i < len(a.F26); i++ {
+		if a.F26[i] != b.F26[i] {
+			t.Error("出错啦！#29")
+			return
+		}
+	}
+	t.Log(b.F26)
 }

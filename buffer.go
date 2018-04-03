@@ -150,54 +150,38 @@ func (o *Buffer) dec_uint16(p *Properties, base structPointer) error {
 }
 
 // uint32
-func (o *Buffer) enc_uint32le(p *Properties, base structPointer) error {
+func (o *Buffer) enc_uint32(p *Properties, base structPointer) error {
 	v := (*uint32)(unsafe.Pointer(uintptr(base) + uintptr(p.field)))
 	if v == nil {
 		return ErrNil
 	}
 	x := *v
-	o.buf = append(o.buf, uint8(x), uint8(x>>8), uint8(x>>16), uint8(x>>24))
-	return nil
-}
-
-func (o *Buffer) enc_uint32be(p *Properties, base structPointer) error {
-	v := (*uint32)(unsafe.Pointer(uintptr(base) + uintptr(p.field)))
-	if v == nil {
-		return ErrNil
+	if CurrentByteOrder == LE {
+		o.buf = append(o.buf, uint8(x), uint8(x>>8), uint8(x>>16), uint8(x>>24))
+	} else {
+		o.buf = append(o.buf, uint8(x>>24), uint8(x>>16), uint8(x>>8), uint8(x))
 	}
-	x := *v
-	o.buf = append(o.buf, uint8(x>>24), uint8(x>>16), uint8(x>>8), uint8(x))
 	return nil
 }
 
-func (o *Buffer) dec_uint32le(p *Properties, base structPointer) error {
+func (o *Buffer) dec_uint32(p *Properties, base structPointer) error {
 	i := o.index + 4
 	if i < 0 || i > len(o.buf) {
 		return io.ErrUnexpectedEOF
 	}
 	o.index = i
-	u := uint32(o.buf[i-4])
-	u |= uint32(o.buf[i-3]) << 8
-	u |= uint32(o.buf[i-2]) << 16
-	u |= uint32(o.buf[i-1]) << 24
-	v := (*uint32)(unsafe.Pointer(uintptr(base) + uintptr(p.field)))
-	if v == nil {
-		return ErrNil
+	var u uint32 = 0
+	if CurrentByteOrder == LE {
+		u = uint32(o.buf[i-4])
+		u |= uint32(o.buf[i-3]) << 8
+		u |= uint32(o.buf[i-2]) << 16
+		u |= uint32(o.buf[i-1]) << 24
+	} else {
+		u = uint32(o.buf[i-4]) << 24
+		u |= uint32(o.buf[i-3]) << 16
+		u |= uint32(o.buf[i-2]) << 8
+		u |= uint32(o.buf[i-1])
 	}
-	*v = u
-	return nil
-}
-
-func (o *Buffer) dec_uint32be(p *Properties, base structPointer) error {
-	i := o.index + 4
-	if i < 0 || i > len(o.buf) {
-		return io.ErrUnexpectedEOF
-	}
-	o.index = i
-	u := uint32(o.buf[i-4]) << 24
-	u = uint32(o.buf[i-3]) << 16
-	u = uint32(o.buf[i-2]) << 8
-	u |= uint32(o.buf[i-1])
 	v := (*uint32)(unsafe.Pointer(uintptr(base) + uintptr(p.field)))
 	if v == nil {
 		return ErrNil
@@ -207,62 +191,46 @@ func (o *Buffer) dec_uint32be(p *Properties, base structPointer) error {
 }
 
 // uint64
-func (o *Buffer) enc_uint64le(p *Properties, base structPointer) error {
+func (o *Buffer) enc_uint64(p *Properties, base structPointer) error {
 	v := (*uint64)(unsafe.Pointer(uintptr(base) + uintptr(p.field)))
 	if v == nil {
 		return ErrNil
 	}
 	x := *v
-	o.buf = append(o.buf, uint8(x), uint8(x>>8), uint8(x>>16), uint8(x>>24), uint8(x>>32), uint8(x>>40), uint8(x>>48), uint8(x>>56))
-	return nil
-}
-
-func (o *Buffer) enc_uint64be(p *Properties, base structPointer) error {
-	v := (*uint64)(unsafe.Pointer(uintptr(base) + uintptr(p.field)))
-	if v == nil {
-		return ErrNil
+	if CurrentByteOrder == LE {
+		o.buf = append(o.buf, uint8(x), uint8(x>>8), uint8(x>>16), uint8(x>>24), uint8(x>>32), uint8(x>>40), uint8(x>>48), uint8(x>>56))
+	} else {
+		o.buf = append(o.buf, uint8(x>>56), uint8(x>>48), uint8(x>>40), uint8(x>>32), uint8(x>>24), uint8(x>>16), uint8(x>>8), uint8(x))
 	}
-	x := *v
-	o.buf = append(o.buf, uint8(x>>56), uint8(x>>48), uint8(x>>40), uint8(x>>32), uint8(x>>24), uint8(x>>16), uint8(x>>8), uint8(x))
 	return nil
 }
 
-func (o *Buffer) dec_uint64le(p *Properties, base structPointer) error {
+func (o *Buffer) dec_uint64(p *Properties, base structPointer) error {
 	i := o.index + 8
 	if i < 0 || i > len(o.buf) {
 		return io.ErrUnexpectedEOF
 	}
 	o.index = i
-	u := uint64(o.buf[i-8])
-	u |= uint64(o.buf[i-7]) << 8
-	u |= uint64(o.buf[i-6]) << 16
-	u |= uint64(o.buf[i-5]) << 24
-	u |= uint64(o.buf[i-4]) << 32
-	u |= uint64(o.buf[i-3]) << 40
-	u |= uint64(o.buf[i-2]) << 48
-	u |= uint64(o.buf[i-1]) << 56
-	v := (*uint64)(unsafe.Pointer(uintptr(base) + uintptr(p.field)))
-	if v == nil {
-		return ErrNil
+	var u uint64 = 0
+	if CurrentByteOrder == LE {
+		u = uint64(o.buf[i-8])
+		u |= uint64(o.buf[i-7]) << 8
+		u |= uint64(o.buf[i-6]) << 16
+		u |= uint64(o.buf[i-5]) << 24
+		u |= uint64(o.buf[i-4]) << 32
+		u |= uint64(o.buf[i-3]) << 40
+		u |= uint64(o.buf[i-2]) << 48
+		u |= uint64(o.buf[i-1]) << 56
+	} else {
+		u = uint64(o.buf[i-8]) << 56
+		u |= uint64(o.buf[i-7]) << 48
+		u |= uint64(o.buf[i-6]) << 40
+		u |= uint64(o.buf[i-5]) << 32
+		u |= uint64(o.buf[i-4]) << 24
+		u |= uint64(o.buf[i-3]) << 16
+		u |= uint64(o.buf[i-2]) << 8
+		u |= uint64(o.buf[i-1])
 	}
-	*v = u
-	return nil
-}
-
-func (o *Buffer) dec_uint64be(p *Properties, base structPointer) error {
-	i := o.index + 8
-	if i < 0 || i > len(o.buf) {
-		return io.ErrUnexpectedEOF
-	}
-	o.index = i
-	u := uint64(o.buf[i-8]) << 56
-	u = uint64(o.buf[i-7]) << 48
-	u = uint64(o.buf[i-6]) << 40
-	u = uint64(o.buf[i-5]) << 32
-	u = uint64(o.buf[i-4]) << 24
-	u = uint64(o.buf[i-3]) << 16
-	u = uint64(o.buf[i-2]) << 8
-	u |= uint64(o.buf[i-1])
 	v := (*uint64)(unsafe.Pointer(uintptr(base) + uintptr(p.field)))
 	if v == nil {
 		return ErrNil
@@ -454,6 +422,116 @@ func (o *Buffer) dec_slice_uint16(p *Properties, base structPointer) error {
 		} else {
 			u = uint16(o.buf[o.index+i*2]) << 8
 			u |= uint16(o.buf[o.index+i*2+1])
+		}
+		*v = append(*v, u)
+	}
+	o.index = end
+	return nil
+}
+
+// []uint32
+func (o *Buffer) enc_slice_uint32(p *Properties, base structPointer) error {
+	v := (*[]uint32)(unsafe.Pointer(uintptr(base) + uintptr(p.field)))
+	if v == nil {
+		return ErrNil
+	}
+	ln := len(*v)
+	o.writeUInt16(uint16(ln))
+	for i := 0; i < ln; i++ {
+		x := (*v)[i]
+		if CurrentByteOrder == LE {
+			o.buf = append(o.buf, uint8(x), uint8(x>>8), uint8(x>>16), uint8(x>>24))
+		} else {
+			o.buf = append(o.buf, uint8(x>>24), uint8(x>>16), uint8(x>>8), uint8(x))
+		}
+	}
+	return nil
+}
+
+func (o *Buffer) dec_slice_uint32(p *Properties, base structPointer) error {
+	v := (*[]uint32)(unsafe.Pointer(uintptr(base) + uintptr(p.field)))
+	if v == nil {
+		return ErrNil
+	}
+	nb, err := o.readUInt16()
+	if err != nil {
+		return err
+	}
+	end := o.index + int(nb)*4
+	if end < o.index || end > len(o.buf) {
+		return io.ErrUnexpectedEOF
+	}
+	for i := 0; i < int(nb); i++ {
+		var u uint32 = 0
+		if CurrentByteOrder == LE {
+			u = uint32(o.buf[o.index+i*4])
+			u |= uint32(o.buf[o.index+i*4+1]) << 8
+			u |= uint32(o.buf[o.index+i*4+2]) << 16
+			u |= uint32(o.buf[o.index+i*4+3]) << 24
+		} else {
+			u = uint32(o.buf[o.index+i*4]) << 24
+			u |= uint32(o.buf[o.index+i*4+1]) << 16
+			u |= uint32(o.buf[o.index+i*4+2]) << 8
+			u |= uint32(o.buf[o.index+i*4+3])
+		}
+		*v = append(*v, u)
+	}
+	o.index = end
+	return nil
+}
+
+// []uint64
+func (o *Buffer) enc_slice_uint64(p *Properties, base structPointer) error {
+	v := (*[]uint64)(unsafe.Pointer(uintptr(base) + uintptr(p.field)))
+	if v == nil {
+		return ErrNil
+	}
+	ln := len(*v)
+	o.writeUInt16(uint16(ln))
+	for i := 0; i < ln; i++ {
+		x := (*v)[i]
+		if CurrentByteOrder == LE {
+			o.buf = append(o.buf, uint8(x), uint8(x>>8), uint8(x>>16), uint8(x>>24), uint8(x>>32), uint8(x>>40), uint8(x>>48), uint8(x>>56))
+		} else {
+			o.buf = append(o.buf, uint8(x>>56), uint8(x>>48), uint8(x>>40), uint8(x>>32), uint8(x>>24), uint8(x>>16), uint8(x>>8), uint8(x))
+		}
+	}
+	return nil
+}
+
+func (o *Buffer) dec_slice_uint64(p *Properties, base structPointer) error {
+	v := (*[]uint64)(unsafe.Pointer(uintptr(base) + uintptr(p.field)))
+	if v == nil {
+		return ErrNil
+	}
+	nb, err := o.readUInt16()
+	if err != nil {
+		return err
+	}
+	end := o.index + int(nb)*8
+	if end < o.index || end > len(o.buf) {
+		return io.ErrUnexpectedEOF
+	}
+	for i := 0; i < int(nb); i++ {
+		var u uint64 = 0
+		if CurrentByteOrder == LE {
+			u = uint64(o.buf[o.index+i*8])
+			u |= uint64(o.buf[o.index+i*8+1]) << 8
+			u |= uint64(o.buf[o.index+i*8+2]) << 16
+			u |= uint64(o.buf[o.index+i*8+3]) << 24
+			u |= uint64(o.buf[o.index+i*8+4]) << 32
+			u |= uint64(o.buf[o.index+i*8+5]) << 40
+			u |= uint64(o.buf[o.index+i*8+6]) << 48
+			u |= uint64(o.buf[o.index+i*8+7]) << 56
+		} else {
+			u = uint64(o.buf[o.index+i*8]) << 56
+			u |= uint64(o.buf[o.index+i*8+1]) << 48
+			u |= uint64(o.buf[o.index+i*8+2]) << 40
+			u |= uint64(o.buf[o.index+i*8+3]) << 32
+			u |= uint64(o.buf[o.index+i*8+4]) << 24
+			u |= uint64(o.buf[o.index+i*8+5]) << 16
+			u |= uint64(o.buf[o.index+i*8+6]) << 8
+			u |= uint64(o.buf[o.index+i*8+7])
 		}
 		*v = append(*v, u)
 	}
