@@ -129,6 +129,9 @@ func (p *Properties) setEncAndDec(typ reflect.Type, f *reflect.StructField) {
 		case reflect.Uint64, reflect.Int64, reflect.Float64: // []uint64 []int64 []float64
 			p.enc = (*Buffer).enc_slice_uint64
 			p.dec = (*Buffer).dec_slice_uint64
+		case reflect.String: // []string
+			p.enc = (*Buffer).enc_slice_string
+			p.dec = (*Buffer).dec_slice_string
 		default:
 			panic("cstruct: unknow type. field name = " + f.Name)
 		}

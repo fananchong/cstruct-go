@@ -265,7 +265,7 @@ func (o *Buffer) dec_string(p *Properties, base structPointer) error {
 		return io.ErrUnexpectedEOF
 	}
 	buf := o.buf[o.index:end]
-	o.index += int(nb)
+	o.index = end
 
 	v := structPointer_StringVal(base, p.field)
 	if v == nil {
@@ -536,6 +536,49 @@ func (o *Buffer) dec_slice_uint64(p *Properties, base structPointer) error {
 		*v = append(*v, u)
 	}
 	o.index = end
+	return nil
+}
+
+// []string
+func (o *Buffer) enc_slice_string(p *Properties, base structPointer) error {
+	v := (*[]string)(unsafe.Pointer(uintptr(base) + uintptr(p.field)))
+	if v == nil {
+		return ErrNil
+	}
+	ln := len(*v)
+	o.writeUInt16(uint16(ln))
+	for i := 0; i < ln; i++ {
+		ln2 := len((*v)[i])
+		o.writeUInt16(uint16(ln2))
+		if ln2 > 0 {
+			o.buf = append(o.buf, (*v)[i]...)
+		}
+	}
+	return nil
+}
+
+func (o *Buffer) dec_slice_string(p *Properties, base structPointer) error {
+	v := (*[]string)(unsafe.Pointer(uintptr(base) + uintptr(p.field)))
+	if v == nil {
+		return ErrNil
+	}
+	nb0, err0 := o.readUInt16()
+	if err0 != nil {
+		return err0
+	}
+	for i := 0; i < int(nb0); i++ {
+		nb, err := o.readUInt16()
+		if err != nil {
+			return err
+		}
+		end := o.index + int(nb)
+		if end < o.index || end > len(o.buf) {
+			return io.ErrUnexpectedEOF
+		}
+		buf := o.buf[o.index:end]
+		o.index = end
+		*v = append(*v, string(buf))
+	}
 	return nil
 }
 

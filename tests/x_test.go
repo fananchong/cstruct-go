@@ -43,6 +43,7 @@ type mystruct1 struct {
 	F26 []uint64
 	F27 []float32
 	F28 []float64
+	F29 []string
 }
 
 func Test_LE1(t *testing.T) {
@@ -71,6 +72,7 @@ func Test_LE1(t *testing.T) {
 	a.F26 = []uint64{0, 1, 2, 9223372036854775807, 18446744073709551615}
 	a.F27 = []float32{0.98, -1, 0, -0.98}
 	a.F28 = []float64{0, 999888888.777, 2, -999888888.777}
+	a.F29 = []string{"hello", "", "world", "", "123"}
 
 	a.S0.F3 = 988.07
 	a.S0.F4 = "world1"
@@ -105,6 +107,7 @@ func Test_LE2(t *testing.T) {
 	a.F26 = []uint64{}
 	a.F27 = []float32{}
 	a.F28 = []float64{}
+	a.F29 = []string{}
 
 	a.S0.F3 = 988.07
 	a.S0.F4 = "world2"
@@ -139,6 +142,7 @@ func Test_BE1(t *testing.T) {
 	a.F26 = []uint64{0, 1, 2, 9223372036854775807, 18446744073709551615}
 	a.F27 = []float32{0.98, -1, 0, -0.98}
 	a.F28 = []float64{0, 999888888.777, 2, -999888888.777}
+	a.F29 = []string{"hello", "", "world", "", "123"}
 
 	a.S0.F3 = 988.07
 	a.S0.F4 = "world3"
@@ -173,6 +177,7 @@ func Test_BE2(t *testing.T) {
 	a.F26 = []uint64{}
 	a.F27 = []float32{}
 	a.F28 = []float64{}
+	a.F29 = []string{}
 
 	a.S0.F3 = 988.07
 	a.S0.F4 = "world4"
@@ -414,4 +419,16 @@ func test1(t *testing.T, a *mystruct1, order cstruct.ByteOrder) {
 		}
 	}
 	t.Log(b.F28)
+
+	if len(a.F29) != len(b.F29) {
+		t.Error("出错啦！#32")
+		return
+	}
+	for i := 0; i < len(a.F29); i++ {
+		if a.F29[i] != b.F29[i] {
+			t.Error("出错啦！#32")
+			return
+		}
+	}
+	t.Log(b.F29)
 }
