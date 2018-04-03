@@ -123,10 +123,10 @@ func (p *Properties) setEncAndDec(typ reflect.Type, f *reflect.StructField) {
 		case reflect.Uint16, reflect.Int16: // []uint16 []int16
 			p.enc = (*Buffer).enc_slice_uint16
 			p.dec = (*Buffer).dec_slice_uint16
-		case reflect.Uint32, reflect.Int32: // []uint32 []int32
+		case reflect.Uint32, reflect.Int32, reflect.Float32: // []uint32 []int32 []float32
 			p.enc = (*Buffer).enc_slice_uint32
 			p.dec = (*Buffer).dec_slice_uint32
-		case reflect.Uint64, reflect.Int64: // []uint64 []int64
+		case reflect.Uint64, reflect.Int64, reflect.Float64: // []uint64 []int64 []float64
 			p.enc = (*Buffer).enc_slice_uint64
 			p.dec = (*Buffer).dec_slice_uint64
 		default:

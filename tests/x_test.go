@@ -41,6 +41,8 @@ type mystruct1 struct {
 	F24 []uint32
 	F25 []int64
 	F26 []uint64
+	F27 []float32
+	F28 []float64
 }
 
 func Test_LE1(t *testing.T) {
@@ -67,6 +69,8 @@ func Test_LE1(t *testing.T) {
 	a.F24 = []uint32{0, 1, 2, 2147483647, 4294967295}
 	a.F25 = []int64{1, -1, 0, 9223372036854775807, -9223372036854775808}
 	a.F26 = []uint64{0, 1, 2, 9223372036854775807, 18446744073709551615}
+	a.F27 = []float32{0.98, -1, 0, -0.98}
+	a.F28 = []float64{0, 999888888.777, 2, -999888888.777}
 
 	a.S0.F3 = 988.07
 	a.S0.F4 = "world1"
@@ -99,6 +103,8 @@ func Test_LE2(t *testing.T) {
 	a.F24 = []uint32{}
 	a.F25 = []int64{}
 	a.F26 = []uint64{}
+	a.F27 = []float32{}
+	a.F28 = []float64{}
 
 	a.S0.F3 = 988.07
 	a.S0.F4 = "world2"
@@ -131,6 +137,8 @@ func Test_BE1(t *testing.T) {
 	a.F24 = []uint32{0, 1, 2, 2147483647, 4294967295}
 	a.F25 = []int64{1, -1, 0, 9223372036854775807, -9223372036854775808}
 	a.F26 = []uint64{0, 1, 2, 9223372036854775807, 18446744073709551615}
+	a.F27 = []float32{0.98, -1, 0, -0.98}
+	a.F28 = []float64{0, 999888888.777, 2, -999888888.777}
 
 	a.S0.F3 = 988.07
 	a.S0.F4 = "world3"
@@ -163,6 +171,8 @@ func Test_BE2(t *testing.T) {
 	a.F24 = []uint32{}
 	a.F25 = []int64{}
 	a.F26 = []uint64{}
+	a.F27 = []float32{}
+	a.F28 = []float64{}
 
 	a.S0.F3 = 988.07
 	a.S0.F4 = "world4"
@@ -380,4 +390,28 @@ func test1(t *testing.T, a *mystruct1, order cstruct.ByteOrder) {
 		}
 	}
 	t.Log(b.F26)
+
+	if len(a.F27) != len(b.F27) {
+		t.Error("出错啦！#30")
+		return
+	}
+	for i := 0; i < len(a.F27); i++ {
+		if a.F27[i] != b.F27[i] {
+			t.Error("出错啦！#30")
+			return
+		}
+	}
+	t.Log(b.F27)
+
+	if len(a.F28) != len(b.F28) {
+		t.Error("出错啦！#31")
+		return
+	}
+	for i := 0; i < len(a.F28); i++ {
+		if a.F28[i] != b.F28[i] {
+			t.Error("出错啦！#31")
+			return
+		}
+	}
+	t.Log(b.F28)
 }
