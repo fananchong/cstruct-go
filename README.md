@@ -8,19 +8,19 @@ a fast c-style struct packer & unpacker for golang
 
   ```go
   type mystruct1 struct {
-      F1  bool
-      F2  float32
-      F3  float64
-      F4  string
-      F5  []byte
-      F6  int8
-      F7  int16
-      F9  int32
-      F11 int64
-      F12 uint8
-      F13 uint16
-      F15 uint32
-      F17 uint64
+  F1  bool
+  F2  float32
+  F3  float64
+  F4  string
+  F5  []byte
+  F6  int8
+  F7  int16
+  F9  int32
+  F11 int64
+  F12 uint8
+  F13 uint16
+  F15 uint32
+  F17 uint64
   }
   ```
 
@@ -36,13 +36,12 @@ a fast c-style struct packer & unpacker for golang
   // 反序列化代码如下
   b := &mystruct1{}
   if err := cstruct.Unmarshal(buf_l, b); err != nil {
-      fmt.Println(err)
-      return
+  fmt.Println(err)
+  return
   }
   ```
-  
+
   详细例子可以参考：[x_test.go](tests/x_test.go)
-  
 
 ## 字节序
 
@@ -64,8 +63,8 @@ cstruct.CurrentByteOrder = cstruct.BE
 
 ## 基本类型
 
-go类型   | 内存说明
-------- | -----------------------
+go类型    | 内存说明
+------- | ----------------------------
 bool    | 1 byte
 int8    | 1 byte
 uint8   | 1 byte
@@ -80,24 +79,19 @@ float64 | 8 byte
 string  | [2 byte] + [len(字符串) byte]
 []byte  | [2 byte] + [len(2进制数据) byte]
 
+## 指针类型
+
+- 支持struct指针
+
 ## 复杂类型
 
 - 支持struct嵌套
 - 支持基本类型的Slice
 - 支持struct指针的Slice
 
-
-go类型   | 内存说明
-------- | -----------------------
-slice   | [2 byte] + [len(元素内存占用) byte]
-
-
-
-
-## 指针类型
-
-- 支持struct指针
-
+go类型  | 内存说明
+----- | -----------------------------
+slice | [2 byte] + [len(元素内存占用) byte]
 
 ## 基准测试
 
@@ -117,12 +111,3 @@ ok      github.com/fananchong/cstruct-go/benchmarks     4.845s
 ## 参考项目
 
 - <https://github.com/golang/protobuf>
-
-
-## TODO
-
-- 支持 基本类型的Map （参考protobuf）
-
-
-
-
