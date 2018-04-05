@@ -50,6 +50,7 @@ type mystruct1 struct {
 	F28 []float64
 	F29 []string
 	F30 []*mystruct4
+	F31 [][]byte
 }
 
 func Test_LE1(t *testing.T) {
@@ -80,6 +81,7 @@ func Test_LE1(t *testing.T) {
 	a.F28 = []float64{0, 999888888.777, 2, -999888888.777}
 	a.F29 = []string{"hello", "", "world", "", "123"}
 	a.F30 = []*mystruct4{&mystruct4{1, 2}, &mystruct4{10, 20}, &mystruct4{100, 200}, &mystruct4{11, 21}}
+	a.F31 = [][]byte{[]byte("hello1"), []byte{}, []byte("world1"), []byte("hello2"), []byte{}, []byte("world2")}
 
 	a.S0.F3 = 988.07
 	a.S0.F4 = "world1"
@@ -116,6 +118,7 @@ func Test_LE2(t *testing.T) {
 	a.F28 = []float64{}
 	a.F29 = []string{}
 	a.F30 = []*mystruct4{}
+	a.F31 = [][]byte{}
 
 	a.S0.F3 = 988.07
 	a.S0.F4 = "world2"
@@ -152,6 +155,7 @@ func Test_BE1(t *testing.T) {
 	a.F28 = []float64{0, 999888888.777, 2, -999888888.777}
 	a.F29 = []string{"hello", "", "world", "", "123"}
 	a.F30 = []*mystruct4{&mystruct4{1, 2}, &mystruct4{10, 20}, &mystruct4{100, 200}, &mystruct4{11, 21}}
+	a.F31 = [][]byte{[]byte("hello1"), []byte{}, []byte("world1"), []byte("hello2"), []byte{}, []byte("world2")}
 
 	a.S0.F3 = 988.07
 	a.S0.F4 = "world3"
@@ -188,6 +192,7 @@ func Test_BE2(t *testing.T) {
 	a.F28 = []float64{}
 	a.F29 = []string{}
 	a.F30 = []*mystruct4{}
+	a.F31 = [][]byte{}
 
 	a.S0.F3 = 988.07
 	a.S0.F4 = "world4"
@@ -458,4 +463,16 @@ func test1(t *testing.T, a *mystruct1, order cstruct.ByteOrder) {
 		}
 	}
 	t.Log(b.F30)
+
+	if len(a.F31) != len(b.F31) {
+		t.Error("出错啦！#34")
+		return
+	}
+	for i := 0; i < len(a.F31); i++ {
+		if string(a.F31[i]) != string(b.F31[i]) {
+			t.Error("出错啦！#34")
+			return
+		}
+	}
+	t.Log(b.F31)
 }

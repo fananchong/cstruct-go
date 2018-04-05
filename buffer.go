@@ -305,7 +305,7 @@ func (o *Buffer) dec_slice_byte(p *Properties, base structPointer) error {
 		return io.ErrUnexpectedEOF
 	}
 	buf := o.buf[o.index:end]
-	o.index += int(nb)
+	o.index = end
 
 	*v = append(buf)
 	return nil
@@ -613,6 +613,51 @@ func (o *Buffer) dec_slice_substruct_ptr(p *Properties, base structPointer) erro
 		bas := toStructPointer(reflect.New(p.stype))
 		o.unmarshalType(p.stype, p.sprop, bas)
 		v.Append(bas)
+	}
+	return nil
+}
+
+// [][]byte
+func (o *Buffer) enc_slice_slice_byte(p *Properties, base structPointer) error {
+	v := structPointer_BytesSlice(base, p.field)
+	if v == nil {
+		return ErrNil
+	}
+	ln := len(*v)
+	o.writeUInt16(uint16(ln))
+	for i := 0; i < ln; i++ {
+		ln2 := len((*v)[i])
+		o.writeUInt16(uint16(ln2))
+		if ln2 > 0 {
+			o.buf = append(o.buf, (*v)[i]...)
+		}
+	}
+	return nil
+}
+
+func (o *Buffer) dec_slice_slice_byte(p *Properties, base structPointer) error {
+	v := structPointer_BytesSlice(base, p.field)
+	if v == nil {
+		return ErrNil
+	}
+	nb, err := o.readUInt16()
+	if err != nil {
+		return err
+	}
+	for i := 0; i < int(nb); i++ {
+		nb2, err := o.readUInt16()
+		if err != nil {
+			return err
+		}
+
+		end := o.index + int(nb2)
+		if end < o.index || end > len(o.buf) {
+			return io.ErrUnexpectedEOF
+		}
+		buf := o.buf[o.index:end]
+		o.index = end
+
+		*v = append(*v, buf)
 	}
 	return nil
 }

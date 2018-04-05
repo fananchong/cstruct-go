@@ -142,6 +142,14 @@ func (p *Properties) setEncAndDec(typ reflect.Type, f *reflect.StructField) {
 			default:
 				panic("cstruct: unknow type. field name = " + f.Name)
 			}
+		case reflect.Slice:
+			switch t2.Elem().Kind() {
+			case reflect.Uint8:
+				p.enc = (*Buffer).enc_slice_slice_byte
+				p.dec = (*Buffer).dec_slice_slice_byte
+			default:
+				panic("cstruct: unknow type. field name = " + f.Name)
+			}
 		default:
 			panic("cstruct: unknow type. field name = " + f.Name)
 		}
