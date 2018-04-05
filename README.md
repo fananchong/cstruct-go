@@ -45,21 +45,8 @@ a fast c-style struct packer & unpacker for golang
 
 ## 字节序
 
-默认`小端`字节序。
+`小端`字节序。
 
-可以通过定义下列语句，改变指定字节序：
-
-```go
-// 指定小端
-cstruct.CurrentByteOrder = cstruct.LE
-```
-
-或者
-
-```go
-// 指定大端
-cstruct.CurrentByteOrder = cstruct.BE
-```
 
 ## 基本类型
 
