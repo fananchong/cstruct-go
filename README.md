@@ -8,19 +8,19 @@ a fast c-style struct packer & unpacker for golang
 
   ```go
   type mystruct1 struct {
-  F1  bool
-  F2  float32
-  F3  float64
-  F4  string
-  F5  []byte
-  F6  int8
-  F7  int16
-  F9  int32
-  F11 int64
-  F12 uint8
-  F13 uint16
-  F15 uint32
-  F17 uint64
+      F1  bool
+      F2  float32
+      F3  float64
+      F4  string
+      F5  []byte
+      F6  int8
+      F7  int16
+      F9  int32
+      F11 int64
+      F12 uint8
+      F13 uint16
+      F15 uint32
+      F17 uint64
   }
   ```
 
@@ -36,8 +36,8 @@ a fast c-style struct packer & unpacker for golang
   // 反序列化代码如下
   b := &mystruct1{}
   if err := cstruct.Unmarshal(buf_l, b); err != nil {
-  fmt.Println(err)
-  return
+      fmt.Println(err)
+      return
   }
   ```
 
@@ -96,14 +96,15 @@ slice | [2 byte] + [len(元素内存占用) byte]
 ## 基准测试
 
 ```dos
-D:\golang\src\github.com\fananchong\cstruct-go\benchmarks>go test -test.bench=".*" -count=1
+D:\golang\src\github.com\fananchong\cstruct-go\benchmarks>call go test -test.bench=".*" -count=1
 goos: windows
 goarch: amd64
 pkg: github.com/fananchong/cstruct-go/benchmarks
-Benchmark_CStructGO-4            1000000              1670 ns/op
-Benchmark_Protobuf-4              500000              3650 ns/op
+Benchmark_CStructGO-4             500000              2540 ns/op
+Benchmark_Protobuf-4              300000              5000 ns/op
+Benchmark_GoGoProtobuf-4         1000000              2067 ns/op
 PASS
-ok      github.com/fananchong/cstruct-go/benchmarks     4.845s
+ok      github.com/fananchong/cstruct-go/benchmarks     5.309s
 ```
 
 基准测试代码：[cstrucgo_test.go](benchmarks/cstrucgo_test.go)
