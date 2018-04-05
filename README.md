@@ -70,6 +70,11 @@ string  | [2 byte] + [len(字符串) byte]
 
 - 支持struct指针
 
+go类型        | 内存说明                                |byte含义说明
+------------ | ---------------------------------------|--------------
+struct ptr   | [1 byte] + [len(struct内存占用) byte]   | 1byte值为0，表示指针为nil
+
+
 ## 复杂类型
 
 - 支持struct嵌套
