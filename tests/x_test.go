@@ -87,7 +87,7 @@ func Test_LE1(t *testing.T) {
 	a.S0.F4 = "world1"
 	a.S0.S1.F5 = []byte("world1")
 
-	test1(t, a, cstruct.LE)
+	test1(t, a)
 }
 
 func Test_LE2(t *testing.T) {
@@ -124,85 +124,10 @@ func Test_LE2(t *testing.T) {
 	a.S0.F4 = "world2"
 	a.S0.S1.F5 = []byte("world2")
 
-	test1(t, a, cstruct.LE)
+	test1(t, a)
 }
 
-func Test_BE1(t *testing.T) {
-	a := &mystruct1{S0: &mystruct2{}}
-	a.F1 = true
-	a.F2 = 0.98
-	a.F3 = 999888888.777
-	a.F4 = "hello1hello2hello3hello4hello5hello6hello7hello8hello9hello0"
-	a.F5 = []byte{1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0}
-	a.F6 = -128
-	a.F7 = -32768
-	a.F9 = -2147483648
-	a.F11 = -9223372036854775808
-	a.F12 = 255
-	a.F13 = 65535
-	a.F15 = 4294967295
-	a.F17 = 18446744073709551615
-	a.F18 = []bool{false, true, true, false, true}
-	a.F19 = []int8{1, -1, 0, 127, -128}
-	a.F20 = []uint8{0, 1, 2, 127, 255}
-	a.F21 = []int16{1, -1, 0, 32767, -32768}
-	a.F22 = []uint16{0, 1, 2, 32767, 65535}
-	a.F23 = []int32{1, -1, 0, 2147483647, -2147483648}
-	a.F24 = []uint32{0, 1, 2, 2147483647, 4294967295}
-	a.F25 = []int64{1, -1, 0, 9223372036854775807, -9223372036854775808}
-	a.F26 = []uint64{0, 1, 2, 9223372036854775807, 18446744073709551615}
-	a.F27 = []float32{0.98, -1, 0, -0.98}
-	a.F28 = []float64{0, 999888888.777, 2, -999888888.777}
-	a.F29 = []string{"hello", "", "world", "", "123"}
-	a.F30 = []*mystruct4{&mystruct4{1, 2}, &mystruct4{10, 20}, &mystruct4{100, 200}, &mystruct4{11, 21}}
-	a.F31 = [][]byte{[]byte("hello1"), []byte{}, []byte("world1"), []byte("hello2"), []byte{}, []byte("world2")}
-
-	a.S0.F3 = 988.07
-	a.S0.F4 = "world3"
-	a.S0.S1.F5 = []byte("world3")
-
-	test1(t, a, cstruct.BE)
-}
-
-func Test_BE2(t *testing.T) {
-	a := &mystruct1{S0: &mystruct2{}}
-	a.F1 = false
-	a.F2 = -0.98
-	a.F3 = -999888888.777
-	a.F4 = ""
-	a.F5 = []byte{}
-	a.F6 = 127
-	a.F7 = 32767
-	a.F9 = 2147483647
-	a.F11 = 9223372036854775807
-	a.F12 = 1
-	a.F13 = 1
-	a.F15 = 1
-	a.F17 = 1
-	a.F18 = []bool{}
-	a.F19 = []int8{}
-	a.F20 = []uint8{}
-	a.F21 = []int16{}
-	a.F22 = []uint16{}
-	a.F23 = []int32{}
-	a.F24 = []uint32{}
-	a.F25 = []int64{}
-	a.F26 = []uint64{}
-	a.F27 = []float32{}
-	a.F28 = []float64{}
-	a.F29 = []string{}
-	a.F30 = []*mystruct4{}
-	a.F31 = [][]byte{}
-
-	a.S0.F3 = 988.07
-	a.S0.F4 = "world4"
-	a.S0.S1.F5 = []byte("world4")
-
-	test1(t, a, cstruct.BE)
-}
-
-func test1(t *testing.T, a *mystruct1, order cstruct.ByteOrder) {
-	cstruct.CurrentByteOrder = order
+func test1(t *testing.T, a *mystruct1) {
 	buf_l, _ := cstruct.Marshal(a)
 	b := &mystruct1{S0: &mystruct2{}}
 	if err := cstruct.Unmarshal(buf_l, b); err != nil {

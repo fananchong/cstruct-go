@@ -1,6 +1,7 @@
 package cstruct
 
 import (
+	"encoding/binary"
 	"io"
 	"reflect"
 	"unsafe"
@@ -156,37 +157,21 @@ func (o *Buffer) enc_uint32(p *Properties, base structPointer) error {
 		return ErrNil
 	}
 	x := *v
-	if CurrentByteOrder == LE {
-		o.buf = append(o.buf, uint8(x), uint8(x>>8), uint8(x>>16), uint8(x>>24))
-	} else {
-		o.buf = append(o.buf, uint8(x>>24), uint8(x>>16), uint8(x>>8), uint8(x))
-	}
+	o.buf = append(o.buf, uint8(x), uint8(x>>8), uint8(x>>16), uint8(x>>24))
 	return nil
 }
 
 func (o *Buffer) dec_uint32(p *Properties, base structPointer) error {
+	v := (*uint32)(unsafe.Pointer(uintptr(base) + uintptr(p.field)))
+	if v == nil {
+		return ErrNil
+	}
 	i := o.index + 4
 	if i < 0 || i > len(o.buf) {
 		return io.ErrUnexpectedEOF
 	}
 	o.index = i
-	var u uint32 = 0
-	if CurrentByteOrder == LE {
-		u = uint32(o.buf[i-4])
-		u |= uint32(o.buf[i-3]) << 8
-		u |= uint32(o.buf[i-2]) << 16
-		u |= uint32(o.buf[i-1]) << 24
-	} else {
-		u = uint32(o.buf[i-4]) << 24
-		u |= uint32(o.buf[i-3]) << 16
-		u |= uint32(o.buf[i-2]) << 8
-		u |= uint32(o.buf[i-1])
-	}
-	v := (*uint32)(unsafe.Pointer(uintptr(base) + uintptr(p.field)))
-	if v == nil {
-		return ErrNil
-	}
-	*v = u
+	*v = binary.LittleEndian.Uint32(o.buf[i-4:])
 	return nil
 }
 
@@ -197,45 +182,21 @@ func (o *Buffer) enc_uint64(p *Properties, base structPointer) error {
 		return ErrNil
 	}
 	x := *v
-	if CurrentByteOrder == LE {
-		o.buf = append(o.buf, uint8(x), uint8(x>>8), uint8(x>>16), uint8(x>>24), uint8(x>>32), uint8(x>>40), uint8(x>>48), uint8(x>>56))
-	} else {
-		o.buf = append(o.buf, uint8(x>>56), uint8(x>>48), uint8(x>>40), uint8(x>>32), uint8(x>>24), uint8(x>>16), uint8(x>>8), uint8(x))
-	}
+	o.buf = append(o.buf, uint8(x), uint8(x>>8), uint8(x>>16), uint8(x>>24), uint8(x>>32), uint8(x>>40), uint8(x>>48), uint8(x>>56))
 	return nil
 }
 
 func (o *Buffer) dec_uint64(p *Properties, base structPointer) error {
+	v := (*uint64)(unsafe.Pointer(uintptr(base) + uintptr(p.field)))
+	if v == nil {
+		return ErrNil
+	}
 	i := o.index + 8
 	if i < 0 || i > len(o.buf) {
 		return io.ErrUnexpectedEOF
 	}
 	o.index = i
-	var u uint64 = 0
-	if CurrentByteOrder == LE {
-		u = uint64(o.buf[i-8])
-		u |= uint64(o.buf[i-7]) << 8
-		u |= uint64(o.buf[i-6]) << 16
-		u |= uint64(o.buf[i-5]) << 24
-		u |= uint64(o.buf[i-4]) << 32
-		u |= uint64(o.buf[i-3]) << 40
-		u |= uint64(o.buf[i-2]) << 48
-		u |= uint64(o.buf[i-1]) << 56
-	} else {
-		u = uint64(o.buf[i-8]) << 56
-		u |= uint64(o.buf[i-7]) << 48
-		u |= uint64(o.buf[i-6]) << 40
-		u |= uint64(o.buf[i-5]) << 32
-		u |= uint64(o.buf[i-4]) << 24
-		u |= uint64(o.buf[i-3]) << 16
-		u |= uint64(o.buf[i-2]) << 8
-		u |= uint64(o.buf[i-1])
-	}
-	v := (*uint64)(unsafe.Pointer(uintptr(base) + uintptr(p.field)))
-	if v == nil {
-		return ErrNil
-	}
-	*v = u
+	*v = binary.LittleEndian.Uint64(o.buf[i-8:])
 	return nil
 }
 
@@ -392,11 +353,7 @@ func (o *Buffer) enc_slice_uint16(p *Properties, base structPointer) error {
 	o.writeUInt16(uint16(ln))
 	for i := 0; i < ln; i++ {
 		val := (*v)[i]
-		if CurrentByteOrder == LE {
-			o.buf = append(o.buf, uint8(val), uint8(val>>8))
-		} else {
-			o.buf = append(o.buf, uint8(val>>8), uint8(val))
-		}
+		o.buf = append(o.buf, uint8(val), uint8(val>>8))
 	}
 	return nil
 }
@@ -415,15 +372,7 @@ func (o *Buffer) dec_slice_uint16(p *Properties, base structPointer) error {
 		return io.ErrUnexpectedEOF
 	}
 	for i := 0; i < int(nb); i++ {
-		var u uint16 = 0
-		if CurrentByteOrder == LE {
-			u = uint16(o.buf[o.index+i*2])
-			u |= uint16(o.buf[o.index+i*2+1]) << 8
-		} else {
-			u = uint16(o.buf[o.index+i*2]) << 8
-			u |= uint16(o.buf[o.index+i*2+1])
-		}
-		*v = append(*v, u)
+		*v = append(*v, binary.LittleEndian.Uint16(o.buf[o.index+i*2:]))
 	}
 	o.index = end
 	return nil
@@ -439,11 +388,7 @@ func (o *Buffer) enc_slice_uint32(p *Properties, base structPointer) error {
 	o.writeUInt16(uint16(ln))
 	for i := 0; i < ln; i++ {
 		x := (*v)[i]
-		if CurrentByteOrder == LE {
-			o.buf = append(o.buf, uint8(x), uint8(x>>8), uint8(x>>16), uint8(x>>24))
-		} else {
-			o.buf = append(o.buf, uint8(x>>24), uint8(x>>16), uint8(x>>8), uint8(x))
-		}
+		o.buf = append(o.buf, uint8(x), uint8(x>>8), uint8(x>>16), uint8(x>>24))
 	}
 	return nil
 }
@@ -462,19 +407,7 @@ func (o *Buffer) dec_slice_uint32(p *Properties, base structPointer) error {
 		return io.ErrUnexpectedEOF
 	}
 	for i := 0; i < int(nb); i++ {
-		var u uint32 = 0
-		if CurrentByteOrder == LE {
-			u = uint32(o.buf[o.index+i*4])
-			u |= uint32(o.buf[o.index+i*4+1]) << 8
-			u |= uint32(o.buf[o.index+i*4+2]) << 16
-			u |= uint32(o.buf[o.index+i*4+3]) << 24
-		} else {
-			u = uint32(o.buf[o.index+i*4]) << 24
-			u |= uint32(o.buf[o.index+i*4+1]) << 16
-			u |= uint32(o.buf[o.index+i*4+2]) << 8
-			u |= uint32(o.buf[o.index+i*4+3])
-		}
-		*v = append(*v, u)
+		*v = append(*v, binary.LittleEndian.Uint32(o.buf[o.index+i*4:]))
 	}
 	o.index = end
 	return nil
@@ -490,11 +423,7 @@ func (o *Buffer) enc_slice_uint64(p *Properties, base structPointer) error {
 	o.writeUInt16(uint16(ln))
 	for i := 0; i < ln; i++ {
 		x := (*v)[i]
-		if CurrentByteOrder == LE {
-			o.buf = append(o.buf, uint8(x), uint8(x>>8), uint8(x>>16), uint8(x>>24), uint8(x>>32), uint8(x>>40), uint8(x>>48), uint8(x>>56))
-		} else {
-			o.buf = append(o.buf, uint8(x>>56), uint8(x>>48), uint8(x>>40), uint8(x>>32), uint8(x>>24), uint8(x>>16), uint8(x>>8), uint8(x))
-		}
+		o.buf = append(o.buf, uint8(x), uint8(x>>8), uint8(x>>16), uint8(x>>24), uint8(x>>32), uint8(x>>40), uint8(x>>48), uint8(x>>56))
 	}
 	return nil
 }
@@ -513,27 +442,7 @@ func (o *Buffer) dec_slice_uint64(p *Properties, base structPointer) error {
 		return io.ErrUnexpectedEOF
 	}
 	for i := 0; i < int(nb); i++ {
-		var u uint64 = 0
-		if CurrentByteOrder == LE {
-			u = uint64(o.buf[o.index+i*8])
-			u |= uint64(o.buf[o.index+i*8+1]) << 8
-			u |= uint64(o.buf[o.index+i*8+2]) << 16
-			u |= uint64(o.buf[o.index+i*8+3]) << 24
-			u |= uint64(o.buf[o.index+i*8+4]) << 32
-			u |= uint64(o.buf[o.index+i*8+5]) << 40
-			u |= uint64(o.buf[o.index+i*8+6]) << 48
-			u |= uint64(o.buf[o.index+i*8+7]) << 56
-		} else {
-			u = uint64(o.buf[o.index+i*8]) << 56
-			u |= uint64(o.buf[o.index+i*8+1]) << 48
-			u |= uint64(o.buf[o.index+i*8+2]) << 40
-			u |= uint64(o.buf[o.index+i*8+3]) << 32
-			u |= uint64(o.buf[o.index+i*8+4]) << 24
-			u |= uint64(o.buf[o.index+i*8+5]) << 16
-			u |= uint64(o.buf[o.index+i*8+6]) << 8
-			u |= uint64(o.buf[o.index+i*8+7])
-		}
-		*v = append(*v, u)
+		*v = append(*v, binary.LittleEndian.Uint64(o.buf[o.index+i*8:]))
 	}
 	o.index = end
 	return nil
@@ -663,11 +572,7 @@ func (o *Buffer) dec_slice_slice_byte(p *Properties, base structPointer) error {
 }
 
 func (o *Buffer) writeUInt16(val uint16) {
-	if CurrentByteOrder == LE {
-		o.buf = append(o.buf, uint8(val), uint8(val>>8))
-	} else {
-		o.buf = append(o.buf, uint8(val>>8), uint8(val))
-	}
+	o.buf = append(o.buf, uint8(val), uint8(val>>8))
 }
 
 func (o *Buffer) readUInt16() (uint16, error) {
@@ -676,13 +581,5 @@ func (o *Buffer) readUInt16() (uint16, error) {
 		return 0, io.ErrUnexpectedEOF
 	}
 	o.index = i
-	var ret uint16 = 0
-	if CurrentByteOrder == LE {
-		ret = uint16(o.buf[i-2])
-		ret |= uint16(o.buf[i-1]) << 8
-	} else {
-		ret = uint16(o.buf[i-2]) << 8
-		ret |= uint16(o.buf[i-1])
-	}
-	return ret, nil
+	return binary.LittleEndian.Uint16(o.buf[i-2:]), nil
 }
