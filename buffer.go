@@ -582,6 +582,41 @@ func (o *Buffer) dec_slice_string(p *Properties, base structPointer) error {
 	return nil
 }
 
+// []struct_ptr
+func (o *Buffer) enc_slice_substruct_ptr(p *Properties, base structPointer) error {
+	v := structPointer_StructPointerSlice(base, p.field)
+	if v == nil {
+		return ErrNil
+	}
+	ln := v.Len()
+	o.writeUInt16(uint16(ln))
+	for i := 0; i < ln; i++ {
+		b := (*v)[i]
+		if structPointer_IsNil(b) {
+			return ErrNil
+		}
+		o.enc_struct(p.sprop, b)
+	}
+	return nil
+}
+
+func (o *Buffer) dec_slice_substruct_ptr(p *Properties, base structPointer) error {
+	v := structPointer_StructPointerSlice(base, p.field)
+	if v == nil {
+		return ErrNil
+	}
+	nb, err := o.readUInt16()
+	if err != nil {
+		return err
+	}
+	for i := 0; i < int(nb); i++ {
+		bas := toStructPointer(reflect.New(p.stype))
+		o.unmarshalType(p.stype, p.sprop, bas)
+		v.Append(bas)
+	}
+	return nil
+}
+
 func (o *Buffer) writeUInt16(val uint16) {
 	if CurrentByteOrder == LE {
 		o.buf = append(o.buf, uint8(val), uint8(val>>8))

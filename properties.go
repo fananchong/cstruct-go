@@ -132,6 +132,16 @@ func (p *Properties) setEncAndDec(typ reflect.Type, f *reflect.StructField) {
 		case reflect.String: // []string
 			p.enc = (*Buffer).enc_slice_string
 			p.dec = (*Buffer).dec_slice_string
+		case reflect.Ptr: // []*struct
+			switch t3 := t2.Elem(); t3.Kind() {
+			case reflect.Struct:
+				p.stype = t3
+				p.sprop = getPropertiesLocked(p.stype)
+				p.enc = (*Buffer).enc_slice_substruct_ptr
+				p.dec = (*Buffer).dec_slice_substruct_ptr
+			default:
+				panic("cstruct: unknow type. field name = " + f.Name)
+			}
 		default:
 			panic("cstruct: unknow type. field name = " + f.Name)
 		}

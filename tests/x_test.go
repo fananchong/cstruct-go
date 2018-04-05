@@ -7,6 +7,11 @@ import (
 	cstruct "github.com/fananchong/cstruct-go"
 )
 
+type mystruct4 struct {
+	F6 int8
+	F7 int16
+}
+
 type mystruct3 struct {
 	F5 []byte
 }
@@ -44,6 +49,7 @@ type mystruct1 struct {
 	F27 []float32
 	F28 []float64
 	F29 []string
+	F30 []*mystruct4
 }
 
 func Test_LE1(t *testing.T) {
@@ -73,6 +79,7 @@ func Test_LE1(t *testing.T) {
 	a.F27 = []float32{0.98, -1, 0, -0.98}
 	a.F28 = []float64{0, 999888888.777, 2, -999888888.777}
 	a.F29 = []string{"hello", "", "world", "", "123"}
+	a.F30 = []*mystruct4{&mystruct4{1, 2}, &mystruct4{10, 20}, &mystruct4{100, 200}, &mystruct4{11, 21}}
 
 	a.S0.F3 = 988.07
 	a.S0.F4 = "world1"
@@ -108,6 +115,7 @@ func Test_LE2(t *testing.T) {
 	a.F27 = []float32{}
 	a.F28 = []float64{}
 	a.F29 = []string{}
+	a.F30 = []*mystruct4{}
 
 	a.S0.F3 = 988.07
 	a.S0.F4 = "world2"
@@ -143,6 +151,7 @@ func Test_BE1(t *testing.T) {
 	a.F27 = []float32{0.98, -1, 0, -0.98}
 	a.F28 = []float64{0, 999888888.777, 2, -999888888.777}
 	a.F29 = []string{"hello", "", "world", "", "123"}
+	a.F30 = []*mystruct4{&mystruct4{1, 2}, &mystruct4{10, 20}, &mystruct4{100, 200}, &mystruct4{11, 21}}
 
 	a.S0.F3 = 988.07
 	a.S0.F4 = "world3"
@@ -178,6 +187,7 @@ func Test_BE2(t *testing.T) {
 	a.F27 = []float32{}
 	a.F28 = []float64{}
 	a.F29 = []string{}
+	a.F30 = []*mystruct4{}
 
 	a.S0.F3 = 988.07
 	a.S0.F4 = "world4"
@@ -195,6 +205,7 @@ func test1(t *testing.T, a *mystruct1, order cstruct.ByteOrder) {
 		t.Error("出错啦！#0")
 		return
 	}
+
 	if a.F1 != b.F1 {
 		t.Error("出错啦！#1")
 		return
@@ -431,4 +442,20 @@ func test1(t *testing.T, a *mystruct1, order cstruct.ByteOrder) {
 		}
 	}
 	t.Log(b.F29)
+
+	if len(a.F30) != len(b.F30) {
+		t.Error("出错啦！#33")
+		return
+	}
+	for i := 0; i < len(a.F30); i++ {
+		if a.F30[i].F6 != b.F30[i].F6 {
+			t.Error("出错啦！#33")
+			return
+		}
+		if a.F30[i].F7 != b.F30[i].F7 {
+			t.Error("出错啦！#33")
+			return
+		}
+	}
+	t.Log(b.F30)
 }
