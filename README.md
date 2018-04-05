@@ -99,3 +99,5 @@ ok      github.com/fananchong/cstruct-go/benchmarks     5.899s
 ## 参考项目
 
 - <https://github.com/golang/protobuf>
+- <https://github.com/gogo/protobuf>
+
