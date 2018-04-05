@@ -251,10 +251,8 @@ func (o *Buffer) dec_slice_byte(p *Properties, base structPointer) error {
 	if end < o.index || end > len(o.buf) {
 		return io.ErrUnexpectedEOF
 	}
-	buf := o.buf[o.index:end]
+	*v = append((*v)[:0], o.buf[o.index:end]...)
 	o.index = end
-
-	*v = append(buf)
 	return nil
 }
 
@@ -339,9 +337,10 @@ func (o *Buffer) dec_slice_bool(p *Properties, base structPointer) error {
 	if end < o.index || end > len(o.buf) {
 		return io.ErrUnexpectedEOF
 	}
+	*v = make([]bool, int(nb))
 	for i := 0; i < int(nb); i++ {
 		u := uint8(o.buf[o.index+i])
-		*v = append(*v, u != 0)
+		(*v)[i] = (u != 0)
 	}
 	o.index = end
 	return nil
@@ -375,8 +374,9 @@ func (o *Buffer) dec_slice_uint16(p *Properties, base structPointer) error {
 	if end < o.index || end > len(o.buf) {
 		return io.ErrUnexpectedEOF
 	}
+	*v = make([]uint16, int(nb))
 	for i := 0; i < int(nb); i++ {
-		*v = append(*v, binary.LittleEndian.Uint16(o.buf[o.index+i*2:]))
+		(*v)[i] = binary.LittleEndian.Uint16(o.buf[o.index+i*2:])
 	}
 	o.index = end
 	return nil
@@ -410,8 +410,9 @@ func (o *Buffer) dec_slice_uint32(p *Properties, base structPointer) error {
 	if end < o.index || end > len(o.buf) {
 		return io.ErrUnexpectedEOF
 	}
+	*v = make([]uint32, int(nb))
 	for i := 0; i < int(nb); i++ {
-		*v = append(*v, binary.LittleEndian.Uint32(o.buf[o.index+i*4:]))
+		(*v)[i] = binary.LittleEndian.Uint32(o.buf[o.index+i*4:])
 	}
 	o.index = end
 	return nil
@@ -445,8 +446,9 @@ func (o *Buffer) dec_slice_uint64(p *Properties, base structPointer) error {
 	if end < o.index || end > len(o.buf) {
 		return io.ErrUnexpectedEOF
 	}
+	*v = make([]uint64, int(nb))
 	for i := 0; i < int(nb); i++ {
-		*v = append(*v, binary.LittleEndian.Uint64(o.buf[o.index+i*8:]))
+		(*v)[i] = binary.LittleEndian.Uint64(o.buf[o.index+i*8:])
 	}
 	o.index = end
 	return nil
@@ -481,6 +483,7 @@ func (o *Buffer) dec_slice_string(p *Properties, base structPointer) error {
 	if err0 != nil {
 		return err0
 	}
+	*v = make([]string, int(nb0))
 	for i := 0; i < int(nb0); i++ {
 		nb, err := o.readUInt16()
 		if err != nil {
@@ -490,9 +493,8 @@ func (o *Buffer) dec_slice_string(p *Properties, base structPointer) error {
 		if end < o.index || end > len(o.buf) {
 			return io.ErrUnexpectedEOF
 		}
-		buf := o.buf[o.index:end]
+		(*v)[i] = string(o.buf[o.index:end])
 		o.index = end
-		*v = append(*v, string(buf))
 	}
 	return nil
 }
@@ -533,7 +535,8 @@ func (o *Buffer) dec_slice_substruct_ptr(p *Properties, base structPointer) erro
 	if err != nil {
 		return err
 	}
-	for i := 0; i < int(nb); i++ {
+	*v = make([]structPointer, int(nb))
+	for j := 0; j < int(nb); j++ {
 		i := o.index + 1
 		if i < 0 || i > len(o.buf) {
 			return io.ErrUnexpectedEOF
@@ -541,11 +544,11 @@ func (o *Buffer) dec_slice_substruct_ptr(p *Properties, base structPointer) erro
 		o.index = i
 		flag := uint8(o.buf[i-1])
 		if flag == 0 {
-			v.Append(nil)
+			(*v)[j] = nil
 		} else {
 			bas := toStructPointer(reflect.New(p.stype))
 			o.unmarshalType(p.stype, p.sprop, bas)
-			v.Append(bas)
+			(*v)[j] = bas
 		}
 	}
 	return nil
