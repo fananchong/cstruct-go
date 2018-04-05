@@ -84,6 +84,7 @@ string  | [2 byte] + [len(字符串) byte]
 
 - 支持struct嵌套
 - 支持基本类型的Slice
+- 支持struct指针的Slice
 
 
 ## 指针类型
@@ -113,7 +114,6 @@ ok      github.com/fananchong/cstruct-go/benchmarks     4.845s
 
 ## TODO
 
-- 支持 struct指针的Slice （参考protobuf）
 - 支持 基本类型的Map （参考protobuf）
 
 
