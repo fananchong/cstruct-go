@@ -87,6 +87,13 @@ string  | [2 byte] + [len(字符串) byte]
 - 支持struct指针的Slice
 
 
+go类型   | 内存说明
+------- | -----------------------
+slice   | [2 byte] + [len(元素内存占用) byte]
+
+
+
+
 ## 指针类型
 
 - 支持struct指针
