@@ -100,11 +100,11 @@ D:\golang\src\github.com\fananchong\cstruct-go\benchmarks>call go test -test.ben
 goos: windows
 goarch: amd64
 pkg: github.com/fananchong/cstruct-go/benchmarks
-Benchmark_CStructGO-4             500000              2540 ns/op
-Benchmark_Protobuf-4              300000              5000 ns/op
-Benchmark_GoGoProtobuf-4         1000000              2067 ns/op
+Benchmark_CStructGO-4            1000000              2166 ns/op
+Benchmark_Protobuf-4              300000              5010 ns/op
+Benchmark_GoGoProtobuf-4         1000000              2039 ns/op
 PASS
-ok      github.com/fananchong/cstruct-go/benchmarks     5.309s
+ok      github.com/fananchong/cstruct-go/benchmarks     6.186s
 ```
 
 基准测试代码：[cstrucgo_test.go](benchmarks/cstrucgo_test.go)
