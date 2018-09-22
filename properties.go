@@ -196,6 +196,12 @@ func (p *Properties) setEncAndDec(typ reflect.Type, f *reflect.StructField, fixe
 			p.enc = (*Buffer).enc_array_uint64
 			p.dec = (*Buffer).dec_array_uint64
 			p.siz = (*Buffer).size_array_uint64
+		case reflect.Struct: // [n]struct
+			p.stype = t2
+			p.sprop = getPropertiesLocked(p.stype)
+			p.enc = (*Buffer).enc_array_substruct
+			p.dec = (*Buffer).dec_array_substruct
+			p.siz = (*Buffer).size_array_substruct
 		default:
 			panic("cstruct: unknow type. field name = " + f.Name)
 		}

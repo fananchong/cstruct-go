@@ -7,6 +7,11 @@ import (
 	cstruct "github.com/fananchong/cstruct-go"
 )
 
+type mystruct44 struct {
+	F37 uint16
+	F38 [5]int32
+}
+
 type mystruct4 struct {
 	F6 int8
 	F7 int16
@@ -35,6 +40,9 @@ type mystruct1 struct {
 	F12 uint8
 	F13 uint16
 	S0  *mystruct2
+	S1  mystruct44
+	S2  mystruct44
+	S3  mystruct44
 	F15 uint32
 	F17 uint64
 	F18 []bool
@@ -94,6 +102,13 @@ func Test_LE1(t *testing.T) {
 	a.S0.F3 = 988.07
 	a.S0.F4 = "world1"
 	a.S0.S1.F5 = []byte("world1")
+
+	a.S1.F37 = 65535
+	a.S1.F38 = [5]int32{1, -1, 0, 2147483647, -2147483648}
+	a.S2.F37 = 1
+	a.S2.F38 = [5]int32{1, -1, 0, 1, -2}
+	a.S3.F37 = 65535
+	a.S3.F38 = [5]int32{3, -3, 0, 3, -3}
 
 	test1(t, a)
 }
@@ -412,4 +427,7 @@ func test1(t *testing.T, a *mystruct1) {
 	t.Log(b.F33)
 	t.Log(b.F34)
 	t.Log(b.F35)
+	t.Log(b.S1)
+	t.Log(b.S2)
+	t.Log(b.S3)
 }

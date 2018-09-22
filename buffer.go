@@ -261,7 +261,7 @@ func (o *Buffer) size_slice_byte(p *Properties, base structPointer) int {
 	return len(*v)
 }
 
-// struct
+// struct ptr
 func (o *Buffer) enc_substruct_ptr(p *Properties, base structPointer) error {
 	v := structPointer_GetStructPointer(base, p.field)
 	if v == nil {
@@ -299,6 +299,7 @@ func (o *Buffer) size_substruct_ptr(p *Properties, base structPointer) int {
 	return o.size_struct(p.sprop, v) + 1
 }
 
+// struct
 func (o *Buffer) enc_substruct(p *Properties, base structPointer) error {
 	return o.enc_struct(p.sprop, structPointer(unsafe.Pointer(uintptr(base)+uintptr(p.field))))
 }
@@ -788,4 +789,38 @@ func (o *Buffer) dec_array_uint64(p *Properties, base structPointer) error {
 
 func (o *Buffer) size_array_uint64(p *Properties, base structPointer) int {
 	return p.t.Len() * 8
+}
+
+// [n]struct
+func (o *Buffer) enc_array_substruct(p *Properties, base structPointer) error {
+	ln := p.t.Len()
+	if ln > 0 {
+		itemsize := int(p.stype.Size())
+		for i := 0; i < ln; i++ {
+			data := (structPointer)(unsafe.Pointer(uintptr(base) + uintptr(p.field) + uintptr(i*itemsize)))
+			o.enc_struct(p.sprop, data)
+		}
+	}
+	return nil
+}
+
+func (o *Buffer) dec_array_substruct(p *Properties, base structPointer) error {
+	ln := p.t.Len()
+	if ln > 0 {
+		itemsize := int(p.stype.Size())
+		end := o.index + ln*itemsize
+		if end < o.index || end > len(o.buf) {
+			return io.ErrUnexpectedEOF
+		}
+		for i := 0; i < ln; i++ {
+			data := (structPointer)(unsafe.Pointer(uintptr(base) + uintptr(p.field) + uintptr(i*itemsize)))
+			o.unmarshalType(p.stype, p.sprop, data)
+		}
+		o.index = end
+	}
+	return nil
+}
+
+func (o *Buffer) size_array_substruct(p *Properties, base structPointer) int {
+	return p.t.Len() * int(p.stype.Size())
 }
