@@ -54,6 +54,7 @@ type mystruct1 struct {
 	F32 [5]int8
 	F33 [6]byte
 	F34 [7]uint8
+	F35 [4]bool
 }
 
 func Test_LE1(t *testing.T) {
@@ -88,6 +89,7 @@ func Test_LE1(t *testing.T) {
 	a.F32 = [5]int8{0, 1, 2, 3, 4}
 	a.F33 = [6]byte{'h', 'e', 'l', 'l', 'o', '1'}
 	a.F34 = [7]uint8{0, 1, 2, 3, 4, 5, 6}
+	a.F35 = [4]bool{true, false, false, true}
 
 	a.S0.F3 = 988.07
 	a.S0.F4 = "world1"
@@ -409,4 +411,5 @@ func test1(t *testing.T, a *mystruct1) {
 	t.Log(b.F32)
 	t.Log(b.F33)
 	t.Log(b.F34)
+	t.Log(b.F35)
 }

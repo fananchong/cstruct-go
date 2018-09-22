@@ -3,4 +3,4 @@ set GOBIN=%~dp0\\bin
 echo %GOPATH%
 echo %GOBIN%
 
-go test ./... -v
+go test -v ./tests/array_test.go

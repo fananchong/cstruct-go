@@ -630,7 +630,7 @@ func (o *Buffer) readUInt16() (uint16, error) {
 	return binary.LittleEndian.Uint16(o.buf[i-2:]), nil
 }
 
-// [n]byte
+// [n]byte [n]uint8 [n]int8 [n]bool
 func (o *Buffer) enc_array_byte(p *Properties, base structPointer) error {
 	ln := p.t.Len()
 	if ln > 0 {
@@ -665,4 +665,45 @@ func (o *Buffer) dec_array_byte(p *Properties, base structPointer) error {
 
 func (o *Buffer) size_array_byte(p *Properties, base structPointer) int {
 	return p.t.Len()
+}
+
+// [n]uint16 [n]int16
+func (o *Buffer) enc_array_uint16(p *Properties, base structPointer) error {
+	ln := p.t.Len()
+	if ln > 0 {
+		var data []uint16
+		sliceHeader := (*reflect.SliceHeader)((unsafe.Pointer(&data)))
+		sliceHeader.Cap = ln
+		sliceHeader.Len = ln
+		sliceHeader.Data = uintptr(base) + uintptr(p.field)
+		for i := 0; i < ln; i++ {
+			binary.LittleEndian.PutUint16(o.buf[o.index:], data[i])
+			o.index += 2
+		}
+	}
+	return nil
+}
+
+func (o *Buffer) dec_array_uint16(p *Properties, base structPointer) error {
+	ln := p.t.Len()
+	if ln > 0 {
+		end := o.index + ln*2
+		if end < o.index || end > len(o.buf) {
+			return io.ErrUnexpectedEOF
+		}
+		var data []uint16
+		sliceHeader := (*reflect.SliceHeader)((unsafe.Pointer(&data)))
+		sliceHeader.Cap = ln
+		sliceHeader.Len = ln
+		sliceHeader.Data = uintptr(base) + uintptr(p.field)
+		for i := 0; i < ln; i++ {
+			data[i] = binary.LittleEndian.Uint16(o.buf[o.index+i*2:])
+		}
+		o.index = end
+	}
+	return nil
+}
+
+func (o *Buffer) size_array_uint16(p *Properties, base structPointer) int {
+	return p.t.Len() * 2
 }
