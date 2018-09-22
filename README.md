@@ -240,9 +240,6 @@ ok      github.com/fananchong/cstruct-go/benchmarks     5.899s
 
 基准测试代码：[cstrucgo_test.go](benchmarks/cstrucgo_test.go)
 
-## TODO
-
-- 增加定长数组类型
 
 ## 参考项目
 
