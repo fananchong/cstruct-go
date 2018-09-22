@@ -180,7 +180,6 @@ func (p *Properties) setEncAndDec(typ reflect.Type, f *reflect.StructField, fixe
 	case reflect.Array:
 		switch t2 := typ.Elem(); t2.Kind() {
 		case reflect.Uint8, reflect.Int8, reflect.Bool: // [n]byte [n]uint8 [n]int8 [n]bool
-			*fixedSize += typ.Len()
 			p.enc = (*Buffer).enc_array_byte
 			p.dec = (*Buffer).dec_array_byte
 			p.siz = (*Buffer).size_array_byte
