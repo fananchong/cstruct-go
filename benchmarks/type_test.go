@@ -13,14 +13,18 @@ type TestTypeA struct {
 
 func Benchmark_sprintf(b *testing.B) {
 	a := TestTypeA{}
+	t := ""
 	for i := 0; i < b.N; i++ {
-		_ = fmt.Sprintf("%T", a)
+		t = fmt.Sprintf("%T", a)
 	}
+	b.Log(t)
 }
 
 func Benchmark_reflect(b *testing.B) {
 	a := TestTypeA{}
+	t := ""
 	for i := 0; i < b.N; i++ {
-		_ = reflect.TypeOf(a).String()
+		t = reflect.TypeOf(a).String()
 	}
+	b.Log(t)
 }

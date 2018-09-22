@@ -707,3 +707,85 @@ func (o *Buffer) dec_array_uint16(p *Properties, base structPointer) error {
 func (o *Buffer) size_array_uint16(p *Properties, base structPointer) int {
 	return p.t.Len() * 2
 }
+
+// [n]uint32 [n]int32 [n]float32
+func (o *Buffer) enc_array_uint32(p *Properties, base structPointer) error {
+	ln := p.t.Len()
+	if ln > 0 {
+		var data []uint32
+		sliceHeader := (*reflect.SliceHeader)((unsafe.Pointer(&data)))
+		sliceHeader.Cap = ln
+		sliceHeader.Len = ln
+		sliceHeader.Data = uintptr(base) + uintptr(p.field)
+		for i := 0; i < ln; i++ {
+			binary.LittleEndian.PutUint32(o.buf[o.index:], data[i])
+			o.index += 4
+		}
+	}
+	return nil
+}
+
+func (o *Buffer) dec_array_uint32(p *Properties, base structPointer) error {
+	ln := p.t.Len()
+	if ln > 0 {
+		end := o.index + ln*4
+		if end < o.index || end > len(o.buf) {
+			return io.ErrUnexpectedEOF
+		}
+		var data []uint32
+		sliceHeader := (*reflect.SliceHeader)((unsafe.Pointer(&data)))
+		sliceHeader.Cap = ln
+		sliceHeader.Len = ln
+		sliceHeader.Data = uintptr(base) + uintptr(p.field)
+		for i := 0; i < ln; i++ {
+			data[i] = binary.LittleEndian.Uint32(o.buf[o.index+i*4:])
+		}
+		o.index = end
+	}
+	return nil
+}
+
+func (o *Buffer) size_array_uint32(p *Properties, base structPointer) int {
+	return p.t.Len() * 4
+}
+
+// [n]uint64 [n]int64 [n]float64
+func (o *Buffer) enc_array_uint64(p *Properties, base structPointer) error {
+	ln := p.t.Len()
+	if ln > 0 {
+		var data []uint64
+		sliceHeader := (*reflect.SliceHeader)((unsafe.Pointer(&data)))
+		sliceHeader.Cap = ln
+		sliceHeader.Len = ln
+		sliceHeader.Data = uintptr(base) + uintptr(p.field)
+		for i := 0; i < ln; i++ {
+			binary.LittleEndian.PutUint64(o.buf[o.index:], data[i])
+			o.index += 8
+		}
+	}
+	return nil
+}
+
+func (o *Buffer) dec_array_uint64(p *Properties, base structPointer) error {
+	ln := p.t.Len()
+	if ln > 0 {
+		end := o.index + ln*8
+		if end < o.index || end > len(o.buf) {
+			return io.ErrUnexpectedEOF
+		}
+		var data []uint64
+		sliceHeader := (*reflect.SliceHeader)((unsafe.Pointer(&data)))
+		sliceHeader.Cap = ln
+		sliceHeader.Len = ln
+		sliceHeader.Data = uintptr(base) + uintptr(p.field)
+		for i := 0; i < ln; i++ {
+			data[i] = binary.LittleEndian.Uint64(o.buf[o.index+i*8:])
+		}
+		o.index = end
+	}
+	return nil
+}
+
+func (o *Buffer) size_array_uint64(p *Properties, base structPointer) int {
+	return p.t.Len() * 8
+}
