@@ -51,6 +51,9 @@ type mystruct1 struct {
 	F29 []string
 	F30 []*mystruct4
 	F31 [][]byte
+	F32 [5]int8
+	F33 [6]byte
+	F34 [7]uint8
 }
 
 func Test_LE1(t *testing.T) {
@@ -82,6 +85,9 @@ func Test_LE1(t *testing.T) {
 	a.F29 = []string{"hello", "", "world", "", "123"}
 	a.F30 = []*mystruct4{&mystruct4{1, 2}, &mystruct4{10, 20}, &mystruct4{100, 200}, &mystruct4{11, 21}}
 	a.F31 = [][]byte{[]byte("hello1"), []byte{}, []byte("world1"), []byte("hello2"), []byte{}, []byte("world2")}
+	a.F32 = [5]int8{0, 1, 2, 3, 4}
+	a.F33 = [6]byte{'h', 'e', 'l', 'l', 'o', '1'}
+	a.F34 = [7]uint8{0, 1, 2, 3, 4, 5, 6}
 
 	a.S0.F3 = 988.07
 	a.S0.F4 = "world1"
@@ -400,4 +406,7 @@ func test1(t *testing.T, a *mystruct1) {
 		}
 	}
 	t.Log(b.F31)
+	t.Log(b.F32)
+	t.Log(b.F33)
+	t.Log(b.F34)
 }

@@ -66,6 +66,7 @@ type Properties struct {
 	enc   encoder
 	dec   decoder
 	siz   sizer
+	t     reflect.Type
 	stype reflect.Type
 	sprop *StructProperties
 }
@@ -82,6 +83,7 @@ func (p *Properties) setEncAndDec(typ reflect.Type, f *reflect.StructField, fixe
 	p.enc = nil
 	p.dec = nil
 	p.siz = nil
+	p.t = typ
 
 	switch typ.Kind() {
 	case reflect.Bool: // bool
@@ -172,6 +174,16 @@ func (p *Properties) setEncAndDec(typ reflect.Type, f *reflect.StructField, fixe
 			default:
 				panic("cstruct: unknow type. field name = " + f.Name)
 			}
+		default:
+			panic("cstruct: unknow type. field name = " + f.Name)
+		}
+	case reflect.Array:
+		switch t2 := typ.Elem(); t2.Kind() {
+		case reflect.Uint8, reflect.Int8: // [n]byte [n]uint8 [n]int8
+			*fixedSize += typ.Len()
+			p.enc = (*Buffer).enc_array_byte
+			p.dec = (*Buffer).dec_array_byte
+			p.siz = (*Buffer).size_array_byte
 		default:
 			panic("cstruct: unknow type. field name = " + f.Name)
 		}

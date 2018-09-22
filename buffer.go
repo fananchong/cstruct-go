@@ -629,3 +629,40 @@ func (o *Buffer) readUInt16() (uint16, error) {
 	o.index = i
 	return binary.LittleEndian.Uint16(o.buf[i-2:]), nil
 }
+
+// [n]byte
+func (o *Buffer) enc_array_byte(p *Properties, base structPointer) error {
+	ln := p.t.Len()
+	if ln > 0 {
+		var data []byte
+		sliceHeader := (*reflect.SliceHeader)((unsafe.Pointer(&data)))
+		sliceHeader.Cap = ln
+		sliceHeader.Len = ln
+		sliceHeader.Data = uintptr(base) + uintptr(p.field)
+		copy(o.buf[o.index:], data)
+		o.index += ln
+	}
+	return nil
+}
+
+func (o *Buffer) dec_array_byte(p *Properties, base structPointer) error {
+	ln := p.t.Len()
+	if ln > 0 {
+		end := o.index + ln
+		if end < o.index || end > len(o.buf) {
+			return io.ErrUnexpectedEOF
+		}
+		var data []byte
+		sliceHeader := (*reflect.SliceHeader)((unsafe.Pointer(&data)))
+		sliceHeader.Cap = ln
+		sliceHeader.Len = ln
+		sliceHeader.Data = uintptr(base) + uintptr(p.field)
+		copy(data, o.buf[o.index:end])
+		o.index = end
+	}
+	return nil
+}
+
+func (o *Buffer) size_array_byte(p *Properties, base structPointer) int {
+	return p.t.Len()
+}

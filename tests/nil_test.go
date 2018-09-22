@@ -24,6 +24,7 @@ type mystruct11 struct {
 	F29 []string
 	F30 []*mystruct4
 	F31 [][]byte
+	F32 [0]int8
 }
 
 func Test_NIL1(t *testing.T) {
