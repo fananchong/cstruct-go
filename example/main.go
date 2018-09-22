@@ -18,6 +18,7 @@ type StructB struct {
 	B2 StructA
 	B3 uint16
 	B4 float32
+	B5 [3]StructA
 }
 
 func main() {
@@ -32,6 +33,9 @@ func main() {
 	b.B2.A3[4] = 4
 	b.B3 = 8888
 	b.B4 = 88.8
+	b.B5[0] = b.B2
+	b.B5[1] = b.B2
+	b.B5[2] = b.B2
 
 	data, _ := cstruct.Marshal(&b)
 

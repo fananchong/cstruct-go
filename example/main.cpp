@@ -14,6 +14,7 @@ struct StructB {
 	StructA B2;
 	uint16_t B3;
 	float B4;
+	StructA B5[3];
 };
 
 int main()
@@ -29,6 +30,9 @@ int main()
 	b.B2.A3[4] = 4;
 	b.B3 = 8888;
 	b.B4 = 88.8f;
+	b.B5[0] = b.B2;
+	b.B5[1] = b.B2;
+	b.B5[2] = b.B2;
 
 	printf("len(b) = %llu\n", sizeof(b));
 	printf("struct data len = %llu\n", sizeof(b));

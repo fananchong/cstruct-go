@@ -807,7 +807,7 @@ func (o *Buffer) enc_array_substruct(p *Properties, base structPointer) error {
 func (o *Buffer) dec_array_substruct(p *Properties, base structPointer) error {
 	ln := p.t.Len()
 	if ln > 0 {
-		itemsize := int(p.stype.Size())
+		itemsize := o.size_substruct(p, base)
 		end := o.index + ln*itemsize
 		if end < o.index || end > len(o.buf) {
 			return io.ErrUnexpectedEOF
@@ -822,5 +822,5 @@ func (o *Buffer) dec_array_substruct(p *Properties, base structPointer) error {
 }
 
 func (o *Buffer) size_array_substruct(p *Properties, base structPointer) int {
-	return p.t.Len() * int(p.stype.Size())
+	return p.t.Len() * o.size_substruct(p, base)
 }
