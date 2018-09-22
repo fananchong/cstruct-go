@@ -4,44 +4,44 @@ a fast c-style struct packer & unpacker for golang
 
 ## 用法
 
-1. 定义举例
+  1. 定义举例
 
-  ```go
-  type mystruct1 struct {
-      F1  bool
-      F2  float32
-      F3  float64
-      F4  string
-      F5  []byte
-      F6  int8
-      F7  int16
-      F9  int32
-      F11 int64
-      F12 uint8
-      F13 uint16
-      F15 uint32
-      F17 uint64
-      F18 [20]byte
-      F19 [16]uint32
-  }
-  ```
+      ```go
+      type mystruct1 struct {
+          F1  bool
+          F2  float32
+          F3  float64
+          F4  string
+          F5  []byte
+          F6  int8
+          F7  int16
+          F9  int32
+          F11 int64
+          F12 uint8
+          F13 uint16
+          F15 uint32
+          F17 uint64
+          F18 [20]byte
+          F19 [16]uint32
+      }
+      ```
 
-2. 使用举例
+  2. 使用举例
 
-  ```go
-  a := &mystruct1{}
-  // ...(初始化a 代码略)...
+      ```go
+      a := &mystruct1{}
+      // ...(初始化a 代码略)...
 
-  // 序列化代码如下，返回 []byte类型数据
-  buf_l, _ := cstruct.Marshal(a)
+      // 序列化代码如下，返回 []byte类型数据
+      buf_l, _ := cstruct.Marshal(a)
 
-  // 反序列化代码如下
-  b := &mystruct1{}
-  if err := cstruct.Unmarshal(buf_l, b); err != nil {
-      fmt.Println(err)
-      return
-  }
-  ```
+      // 反序列化代码如下
+      b := &mystruct1{}
+      if err := cstruct.Unmarshal(buf_l, b); err != nil {
+          fmt.Println(err)
+          return
+      }
+      ```
 
   详细例子可以参考：
 
