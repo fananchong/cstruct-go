@@ -21,6 +21,8 @@ a fast c-style struct packer & unpacker for golang
       F13 uint16
       F15 uint32
       F17 uint64
+      F18 [20]byte
+      F19 [16]uint32
   }
   ```
 
@@ -41,12 +43,14 @@ a fast c-style struct packer & unpacker for golang
   }
   ```
 
-  详细例子可以参考：[x_test.go](tests/x_test.go)
+  详细例子可以参考：
+
+  - [x_test.go](tests/x_test.go)
+  - [array_test.go](tests/array_test.go)
 
 ## 字节序
 
 `小端`字节序。
-
 
 ## 基本类型
 
@@ -65,6 +69,13 @@ float32 | 4 byte
 float64 | 8 byte
 string  | [2 byte] + [len(字符串) byte]
 []byte  | [2 byte] + [len(2进制数据) byte]
+
+
+## 数组类型
+
+- 支持基本类型的数组（string 、 []byte 除外，因为它们不定长）
+- 支持定长struct的数组
+
 
 ## 指针类型
 
@@ -101,14 +112,11 @@ ok      github.com/fananchong/cstruct-go/benchmarks     5.899s
 
 基准测试代码：[cstrucgo_test.go](benchmarks/cstrucgo_test.go)
 
-
 ## TODO
 
 - 增加定长数组类型
-
 
 ## 参考项目
 
 - <https://github.com/golang/protobuf>
 - <https://github.com/gogo/protobuf>
-
