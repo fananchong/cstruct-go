@@ -245,3 +245,11 @@ ok      github.com/fananchong/cstruct-go/benchmarks     5.899s
 
 - <https://github.com/golang/protobuf>
 - <https://github.com/gogo/protobuf>
+
+
+## TODO
+
+- *struct slice 增加开关，可以忽略 nil 元素
+- 新增支持 struct slice 类型
+
+
