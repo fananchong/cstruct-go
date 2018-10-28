@@ -159,9 +159,15 @@ func (p *Properties) setEncAndDec(typ reflect.Type, f *reflect.StructField, fixe
 			case reflect.Struct:
 				p.stype = t3
 				p.sprop = getPropertiesLocked(p.stype)
-				p.enc = (*Buffer).enc_slice_substruct_ptr
-				p.dec = (*Buffer).dec_slice_substruct_ptr
-				p.siz = (*Buffer).size_slice_substruct_ptr
+				if OptionSliceIgnoreNil == false {
+					p.enc = (*Buffer).enc_slice_substruct_ptr
+					p.dec = (*Buffer).dec_slice_substruct_ptr
+					p.siz = (*Buffer).size_slice_substruct_ptr
+				} else {
+					p.enc = (*Buffer).enc_slice_substruct_ptr_ignore_nil
+					p.dec = (*Buffer).dec_slice_substruct_ptr_ignore_nil
+					p.siz = (*Buffer).size_slice_substruct_ptr_ignore_nil
+				}
 			default:
 				panic("cstruct: unknow type. field name = " + f.Name)
 			}

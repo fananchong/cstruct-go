@@ -207,11 +207,18 @@ string  | [2 byte] + [len(字符串) byte]
 
 ## 指针类型
 
-- 支持struct指针
+- 支持struct指针（默认格式）
 
-go类型        | 内存说明                                |byte含义说明
------------- | ---------------------------------------|--------------
+go类型       | 内存说明                                |byte含义说明
+------------ | ----------------------------------------|--------------
 struct ptr   | [1 byte] + [len(struct内存占用) byte]   | 1byte值为0，表示指针为nil
+
+
+- 支持struct指针（当 cstruct.OptionSliceIgnoreNil = true ）
+
+go类型       | 内存说明                                
+------------ | ----------------------------------------
+struct ptr   | [len(struct内存占用) byte]              
 
 
 ## 复杂类型
@@ -249,7 +256,6 @@ ok      github.com/fananchong/cstruct-go/benchmarks     5.899s
 
 ## TODO
 
-- *struct slice 增加开关，可以忽略 nil 元素
 - 新增支持 struct slice 类型
 
 

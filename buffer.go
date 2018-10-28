@@ -570,6 +570,52 @@ func (o *Buffer) size_slice_substruct_ptr(p *Properties, base structPointer) int
 	return ret
 }
 
+// []struct_ptr ignore nil
+func (o *Buffer) enc_slice_substruct_ptr_ignore_nil(p *Properties, base structPointer) error {
+	v := structPointer_StructPointerSlice(base, p.field)
+	ln := v.Len()
+	len_index := o.index
+	real_ln := 0
+	o.index += 2
+	for i := 0; i < ln; i++ {
+		sv := (*v)[i]
+		if sv != nil {
+			real_ln++
+			o.enc_struct(p.sprop, sv)
+		}
+	}
+	binary.LittleEndian.PutUint16(o.buf[len_index:], uint16(real_ln))
+	return nil
+}
+
+func (o *Buffer) dec_slice_substruct_ptr_ignore_nil(p *Properties, base structPointer) error {
+	v := structPointer_StructPointerSlice(base, p.field)
+	nb, err := o.readUInt16()
+	if err != nil {
+		return err
+	}
+	*v = make([]structPointer, int(nb))
+	for j := 0; j < int(nb); j++ {
+		bas := toStructPointer(reflect.New(p.stype))
+		o.unmarshalType(p.stype, p.sprop, bas)
+		(*v)[j] = bas
+	}
+	return nil
+}
+
+func (o *Buffer) size_slice_substruct_ptr_ignore_nil(p *Properties, base structPointer) int {
+	ret := 0
+	v := structPointer_StructPointerSlice(base, p.field)
+	ln := v.Len()
+	for i := 0; i < ln; i++ {
+		sv := (*v)[i]
+		if sv != nil {
+			ret += o.size_struct(p.sprop, sv)
+		}
+	}
+	return ret
+}
+
 // [][]byte
 func (o *Buffer) enc_slice_slice_byte(p *Properties, base structPointer) error {
 	v := structPointer_BytesSlice(base, p.field)
