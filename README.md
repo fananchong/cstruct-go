@@ -226,6 +226,7 @@ struct ptr   | [len(struct内存占用) byte]  
 - 支持struct嵌套
 - 支持基本类型的Slice
 - 支持struct指针的Slice
+- 支持struct的Slice
 
 go类型  | 内存说明
 ----- | -----------------------------
@@ -252,10 +253,3 @@ ok      github.com/fananchong/cstruct-go/benchmarks     5.899s
 
 - <https://github.com/golang/protobuf>
 - <https://github.com/gogo/protobuf>
-
-
-## TODO
-
-- 新增支持 struct slice 类型
-
-

@@ -510,6 +510,57 @@ func (o *Buffer) size_slice_string(p *Properties, base structPointer) int {
 	return ret
 }
 
+// []struct
+func (o *Buffer) enc_slice_substruct(p *Properties, base structPointer) error {
+	v := structPointer_StructPointerSlice(base, p.field)
+	var ln = v.Len()
+	binary.LittleEndian.PutUint16(o.buf[o.index:], uint16(ln))
+	o.index += 2
+	itemsize := int(p.stype.Size())
+	sliceHeader := (*reflect.SliceHeader)((unsafe.Pointer(v)))
+	for i := 0; i < ln; i++ {
+		sv := (structPointer)(unsafe.Pointer(sliceHeader.Data + uintptr(i*itemsize)))
+		o.enc_struct(p.sprop, sv)
+	}
+	return nil
+}
+
+func (o *Buffer) dec_slice_substruct(p *Properties, base structPointer) error {
+	v := structPointer_StructPointerSlice(base, p.field)
+	nb, err := o.readUInt16()
+	if err != nil {
+		return err
+	}
+	*v = nil
+	if nb == 0 {
+		return nil
+	}
+	itemsize := int(p.stype.Size())
+	data0 := make([]byte, int(nb)*itemsize)
+	sliceHeader := (*reflect.SliceHeader)((unsafe.Pointer(v)))
+	sliceHeader.Cap = int(nb)
+	sliceHeader.Len = int(nb)
+	sliceHeader.Data = uintptr(unsafe.Pointer(&(data0[0])))
+	for i := 0; i < int(nb); i++ {
+		data := (structPointer)(unsafe.Pointer(sliceHeader.Data + uintptr(i*itemsize)))
+		o.unmarshalType(p.stype, p.sprop, data)
+	}
+	return nil
+}
+
+func (o *Buffer) size_slice_substruct(p *Properties, base structPointer) int {
+	ret := 0
+	v := structPointer_StructPointerSlice(base, p.field)
+	var ln = v.Len()
+	itemsize := int(p.stype.Size())
+	sliceHeader := (*reflect.SliceHeader)((unsafe.Pointer(v)))
+	for i := 0; i < ln; i++ {
+		sv := (structPointer)(unsafe.Pointer(sliceHeader.Data + uintptr(i*itemsize)))
+		ret += o.size_struct(p.sprop, sv)
+	}
+	return ret
+}
+
 // []struct_ptr
 func (o *Buffer) enc_slice_substruct_ptr(p *Properties, base structPointer) error {
 	v := structPointer_StructPointerSlice(base, p.field)
@@ -859,7 +910,7 @@ func (o *Buffer) dec_array_substruct(p *Properties, base structPointer) error {
 			return io.ErrUnexpectedEOF
 		}
 		for i := 0; i < ln; i++ {
-			data := (structPointer)(unsafe.Pointer(uintptr(base) + uintptr(p.field) + uintptr(i*itemsize)))
+			data := (structPointer)(unsafe.Pointer(uintptr(base) + uintptr(p.field) + uintptr(i*int(p.stype.Size()))))
 			o.unmarshalType(p.stype, p.sprop, data)
 		}
 		o.index = end

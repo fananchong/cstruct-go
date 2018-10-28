@@ -154,6 +154,12 @@ func (p *Properties) setEncAndDec(typ reflect.Type, f *reflect.StructField, fixe
 			p.enc = (*Buffer).enc_slice_string
 			p.dec = (*Buffer).dec_slice_string
 			p.siz = (*Buffer).size_slice_string
+		case reflect.Struct: // [] struct
+			p.stype = t2
+			p.sprop = getPropertiesLocked(p.stype)
+			p.enc = (*Buffer).enc_slice_substruct
+			p.dec = (*Buffer).dec_slice_substruct
+			p.siz = (*Buffer).size_slice_substruct
 		case reflect.Ptr: // []*struct
 			switch t3 := t2.Elem(); t3.Kind() {
 			case reflect.Struct:
