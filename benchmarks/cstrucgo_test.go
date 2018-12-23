@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	cstruct "github.com/fananchong/cstruct-go"
-	"github.com/golang/protobuf/proto"
+	"github.com/gogo/protobuf/proto"
 )
 
 type mystruct2 struct {
