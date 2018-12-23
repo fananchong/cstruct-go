@@ -16,3 +16,7 @@
 *.ilk
 .vs
 CMakeFiles
+/bin
+/example/*.cmake
+/example/CMakeCache.txt
+/example/Makefile
