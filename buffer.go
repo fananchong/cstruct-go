@@ -555,12 +555,12 @@ func (o *Buffer) dec_slice_substruct(p *Properties, base structPointer) error {
 
 func (o *Buffer) size_slice_substruct(p *Properties, base structPointer) int {
 	ret := 0
-	v := structPointer_StructPointerSlice(base, p.field)
-	var ln = v.Len()
+	v := unsafe.Pointer(uintptr(base) + uintptr(p.field))
+	sliceHeader := (*realSliceHeader)((unsafe.Pointer(v)))
+	var ln = sliceHeader.Len
 	itemsize := int(p.stype.Size())
-	sliceHeader := (*reflect.SliceHeader)((unsafe.Pointer(v)))
 	for i := 0; i < ln; i++ {
-		sv := (structPointer)(unsafe.Pointer(sliceHeader.Data + uintptr(i*itemsize)))
+		sv := (structPointer)(unsafe.Pointer(uintptr(sliceHeader.Data) + uintptr(i*itemsize)))
 		ret += o.size_struct(p.sprop, sv)
 	}
 	return ret
