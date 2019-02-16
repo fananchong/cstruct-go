@@ -540,13 +540,12 @@ func (o *Buffer) dec_slice_substruct(p *Properties, base structPointer) error {
 		return nil
 	}
 	itemsize := int(p.stype.Size())
-	data0 := make([]byte, int(nb)*itemsize)
-	targetHeader := (*realSliceHeader)(unsafe.Pointer(&data0))
+	targetObj := reflect.MakeSlice(p.t, int(nb), int(nb))
 	v := unsafe.Pointer(uintptr(base) + uintptr(p.field))
 	srcHeader := (*realSliceHeader)((unsafe.Pointer(v)))
 	srcHeader.Cap = int(nb)
 	srcHeader.Len = int(nb)
-	srcHeader.Data = targetHeader.Data
+	srcHeader.Data = unsafe.Pointer(targetObj.Pointer())
 	for i := 0; i < int(nb); i++ {
 		data := (structPointer)(unsafe.Pointer(uintptr(srcHeader.Data) + uintptr(i*itemsize)))
 		o.unmarshalType(p.stype, p.sprop, data)
