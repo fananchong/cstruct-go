@@ -592,7 +592,6 @@ func (o *Buffer) dec_slice_substruct_ptr(p *Properties, base structPointer) erro
 	if err != nil {
 		return err
 	}
-	*v = make([]structPointer, int(nb))
 	for j := 0; j < int(nb); j++ {
 		i := o.index + 1
 		if i < 0 || i > len(o.buf) {
@@ -601,11 +600,11 @@ func (o *Buffer) dec_slice_substruct_ptr(p *Properties, base structPointer) erro
 		o.index = i
 		flag := uint8(o.buf[i-1])
 		if flag == 0 {
-			(*v)[j] = nil
+			v.Append(nil)
 		} else {
 			bas := toStructPointer(reflect.New(p.stype))
+			v.Append(bas)
 			o.unmarshalType(p.stype, p.sprop, bas)
-			(*v)[j] = bas
 		}
 	}
 	return nil
@@ -650,11 +649,10 @@ func (o *Buffer) dec_slice_substruct_ptr_ignore_nil(p *Properties, base structPo
 	if err != nil {
 		return err
 	}
-	*v = make([]structPointer, int(nb))
 	for j := 0; j < int(nb); j++ {
 		bas := toStructPointer(reflect.New(p.stype))
+		v.Append(bas)
 		o.unmarshalType(p.stype, p.sprop, bas)
-		(*v)[j] = bas
 	}
 	return nil
 }
