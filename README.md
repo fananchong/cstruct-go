@@ -236,6 +236,8 @@ slice | [2 byte] + [len(元素内存占用) byte]
 
 ![图](assets/1.jpg)
 
+测试环境：`阿里云ECS服务器，配置： 1 vCPU 2 GB (I/O优化) ecs.t5-lc1m2.small 1Mbps`
+
 基准测试代码：[cstrucgo_test.go](benchmarks/cstrucgo_test.go)
 
 
