@@ -10,8 +10,8 @@ message Myproto4
 
 message Myproto3
 {
-    bool F1 = 1;
-    float F2 = 2;
+	bool F1 = 1;
+	float F2 = 2;
 	double F3 = 3;
 	string F4 = 4;
 	bytes F5 = 5;
@@ -28,5 +28,6 @@ message Myproto3
 	uint64 F16 = 16;
 	uint64 F17 = 17;
 	Myproto4 S0 = 18;
-    repeated string F29 = 19;
+	repeated string F29 = 19;
+	repeated Myproto4 F30 = 20;
 }

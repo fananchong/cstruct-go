@@ -55,10 +55,10 @@ a fast c-style struct packer & unpacker for golang
 
   - [x_test.go](tests/x_test.go)
   - [array_test.go](tests/array_test.go)
-  
-  
+
+
 ## 例子2
-  
+
 演示 C struct 与 Go struct 内存分布一致
 
   - C struct：
@@ -158,7 +158,7 @@ a fast c-style struct packer & unpacker for golang
     ```
 
   - 以上控制台输出
-  
+
     ```shell
     D:\golang\src\github.com\fananchong\cstruct-go\example>main.exe
     len(b) = 76
@@ -171,7 +171,7 @@ a fast c-style struct packer & unpacker for golang
     struct data is:
     127 56 231 3 0 0 0 1 2 3 4 184 34 154 153 177 66 56 231 3 0 0 0 1 2 3 4 56 231 3 0 0 0 1 2 3 4 56 231 3 0 0 0 1 2 3 4
     ```
-  
+
   - 详细例子可以参考：
     - [example](example)
 
@@ -234,17 +234,7 @@ slice | [2 byte] + [len(元素内存占用) byte]
 
 ## 基准测试
 
-```dos
-D:\golang\src\github.com\fananchong\cstruct-go\benchmarks>call go test -test.bench=".*" -count=1
-goos: windows
-goarch: amd64
-pkg: github.com/fananchong/cstruct-go/benchmarks
-Benchmark_CStructGO-4            1000000              1877 ns/op
-Benchmark_Protobuf-4              300000              5003 ns/op
-Benchmark_GoGoProtobuf-4         1000000              2038 ns/op
-PASS
-ok      github.com/fananchong/cstruct-go/benchmarks     5.899s
-```
+![图](assets/1.jpg)
 
 基准测试代码：[cstrucgo_test.go](benchmarks/cstrucgo_test.go)
 

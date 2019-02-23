@@ -28,6 +28,7 @@ type mystruct1 struct {
 	F17 uint64
 	S0  mystruct2
 	F29 []string
+	F30 []*mystruct2
 }
 
 func Benchmark_CStructGO(b *testing.B) {
@@ -48,6 +49,7 @@ func Benchmark_CStructGO(b *testing.B) {
 	a0.S0.F3 = 988.07
 	a0.S0.F4 = "world1world1world1world1world1world1world1world1world1"
 	a0.F29 = []string{"hello", "", "world", "", "123"}
+	a0.F30 = []*mystruct2{&mystruct2{111, "1111111111"}, &mystruct2{222, "2222222222"}, &mystruct2{333, "3333333333"}}
 
 	for i := 0; i < b.N; i++ {
 		buf_l, _ := cstruct.Marshal(a0)
@@ -75,7 +77,7 @@ func Benchmark_Protobuf(b *testing.B) {
 	a0.S0.F3 = 988.07
 	a0.S0.F4 = "world1world1world1world1world1world1world1world1world1"
 	a0.F29 = []string{"hello", "", "world", "", "123"}
-
+	a0.F30 = []*Myproto2{&Myproto2{111, "1111111111"}, &Myproto2{222, "2222222222"}, &Myproto2{333, "3333333333"}}
 	for i := 0; i < b.N; i++ {
 		buf_l, _ := proto.Marshal(a0)
 		a1 := &Myproto1{}
@@ -102,7 +104,7 @@ func Benchmark_GoGoProtobuf(b *testing.B) {
 	a0.S0.F3 = 988.07
 	a0.S0.F4 = "world1world1world1world1world1world1world1world1world1"
 	a0.F29 = []string{"hello", "", "world", "", "123"}
-
+	a0.F30 = []*Myproto4{&Myproto4{111, "1111111111"}, &Myproto4{222, "2222222222"}, &Myproto4{333, "3333333333"}}
 	for i := 0; i < b.N; i++ {
 		buf_l, _ := proto.Marshal(a0)
 		a1 := &Myproto3{}
