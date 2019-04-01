@@ -338,9 +338,10 @@ func (o *Buffer) dec_slice_bool(p *Properties, base structPointer) error {
 	if end < o.index || end > len(o.buf) {
 		return io.ErrUnexpectedEOF
 	}
+	*v = make([]bool, int(nb))
 	for i := 0; i < int(nb); i++ {
 		u := uint8(o.buf[o.index+i])
-		*v = append(*v, u != 0)
+		(*v)[i] = (u != 0)
 	}
 	o.index = end
 	return nil
@@ -374,8 +375,9 @@ func (o *Buffer) dec_slice_uint16(p *Properties, base structPointer) error {
 	if end < o.index || end > len(o.buf) {
 		return io.ErrUnexpectedEOF
 	}
+	*v = make([]uint16, int(nb))
 	for i := 0; i < int(nb); i++ {
-		*v = append(*v, binary.LittleEndian.Uint16(o.buf[o.index+i*2:]))
+		(*v)[i] = binary.LittleEndian.Uint16(o.buf[o.index+i*2:])
 	}
 	o.index = end
 	return nil
@@ -409,8 +411,9 @@ func (o *Buffer) dec_slice_uint32(p *Properties, base structPointer) error {
 	if end < o.index || end > len(o.buf) {
 		return io.ErrUnexpectedEOF
 	}
+	*v = make([]uint32, int(nb))
 	for i := 0; i < int(nb); i++ {
-		*v = append(*v, binary.LittleEndian.Uint32(o.buf[o.index+i*4:]))
+		(*v)[i] = binary.LittleEndian.Uint32(o.buf[o.index+i*4:])
 	}
 	o.index = end
 	return nil
@@ -444,8 +447,9 @@ func (o *Buffer) dec_slice_uint64(p *Properties, base structPointer) error {
 	if end < o.index || end > len(o.buf) {
 		return io.ErrUnexpectedEOF
 	}
+	*v = make([]uint64, int(nb))
 	for i := 0; i < int(nb); i++ {
-		*v = append(*v, binary.LittleEndian.Uint64(o.buf[o.index+i*8:]))
+		(*v)[i] = binary.LittleEndian.Uint64(o.buf[o.index+i*8:])
 	}
 	o.index = end
 	return nil
@@ -480,6 +484,7 @@ func (o *Buffer) dec_slice_string(p *Properties, base structPointer) error {
 	if err0 != nil {
 		return err0
 	}
+	*v = make([]string, int(nb0))
 	for i := 0; i < int(nb0); i++ {
 		nb, err := o.readUInt16()
 		if err != nil {
@@ -489,7 +494,7 @@ func (o *Buffer) dec_slice_string(p *Properties, base structPointer) error {
 		if end < o.index || end > len(o.buf) {
 			return io.ErrUnexpectedEOF
 		}
-		*v = append(*v, string(o.buf[o.index:end]))
+		(*v)[i] = string(o.buf[o.index:end])
 		o.index = end
 	}
 	return nil
@@ -505,22 +510,15 @@ func (o *Buffer) size_slice_string(p *Properties, base structPointer) int {
 	return ret
 }
 
-type realSliceHeader struct {
-	Data unsafe.Pointer
-	Len  int
-	Cap  int
-}
-
 // []struct
 func (o *Buffer) enc_slice_substruct(p *Properties, base structPointer) error {
-	v := unsafe.Pointer(uintptr(base) + uintptr(p.field))
-	sliceHeader := (*realSliceHeader)((unsafe.Pointer(v)))
+	sliceHeader := (*reflect.SliceHeader)(unsafe.Pointer(uintptr(base) + uintptr(p.field)))
 	var ln = sliceHeader.Len
 	binary.LittleEndian.PutUint16(o.buf[o.index:], uint16(ln))
 	o.index += 2
 	itemsize := int(p.stype.Size())
 	for i := 0; i < ln; i++ {
-		sv := (structPointer)(unsafe.Pointer(uintptr(sliceHeader.Data) + uintptr(i*itemsize)))
+		sv := (structPointer)(unsafe.Pointer(sliceHeader.Data + uintptr(i*itemsize)))
 		o.enc_struct(p.sprop, sv)
 	}
 	return nil
@@ -535,14 +533,13 @@ func (o *Buffer) dec_slice_substruct(p *Properties, base structPointer) error {
 		return nil
 	}
 	itemsize := int(p.stype.Size())
-	targetObj := reflect.MakeSlice(p.t, int(nb), int(nb))
-	v := unsafe.Pointer(uintptr(base) + uintptr(p.field))
-	srcHeader := (*realSliceHeader)((unsafe.Pointer(v)))
-	srcHeader.Cap = int(nb)
-	srcHeader.Len = int(nb)
-	srcHeader.Data = unsafe.Pointer(targetObj.Pointer())
+	data := reflect.MakeSlice(p.t, int(nb), int(nb))
+	sliceHeader := (*reflect.SliceHeader)(unsafe.Pointer(uintptr(base) + uintptr(p.field)))
+	sliceHeader.Cap = int(nb)
+	sliceHeader.Len = int(nb)
+	sliceHeader.Data = data.Pointer()
 	for i := 0; i < int(nb); i++ {
-		data := (structPointer)(unsafe.Pointer(uintptr(srcHeader.Data) + uintptr(i*itemsize)))
+		data := (structPointer)(unsafe.Pointer(sliceHeader.Data + uintptr(i*itemsize)))
 		o.unmarshalType(p.stype, p.sprop, data)
 	}
 	return nil
@@ -550,12 +547,11 @@ func (o *Buffer) dec_slice_substruct(p *Properties, base structPointer) error {
 
 func (o *Buffer) size_slice_substruct(p *Properties, base structPointer) int {
 	ret := 0
-	v := unsafe.Pointer(uintptr(base) + uintptr(p.field))
-	sliceHeader := (*realSliceHeader)((unsafe.Pointer(v)))
+	sliceHeader := (*reflect.SliceHeader)(unsafe.Pointer(uintptr(base) + uintptr(p.field)))
 	var ln = sliceHeader.Len
 	itemsize := int(p.stype.Size())
 	for i := 0; i < ln; i++ {
-		sv := (structPointer)(unsafe.Pointer(uintptr(sliceHeader.Data) + uintptr(i*itemsize)))
+		sv := (structPointer)(unsafe.Pointer(sliceHeader.Data + uintptr(i*itemsize)))
 		ret += o.size_struct(p.sprop, sv)
 	}
 	return ret
@@ -598,8 +594,8 @@ func (o *Buffer) dec_slice_substruct_ptr(p *Properties, base structPointer) erro
 			v.Append(nil)
 		} else {
 			bas := toStructPointer(reflect.New(p.stype))
-			v.Append(bas)
 			o.unmarshalType(p.stype, p.sprop, bas)
+			v.Append(bas)
 		}
 	}
 	return nil
