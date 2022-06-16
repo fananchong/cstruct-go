@@ -30,8 +30,8 @@ func GetProperties(t reflect.Type) *StructProperties {
 	}
 
 	propertiesMu.Lock()
+	defer propertiesMu.Unlock()
 	sprop = getPropertiesLocked(t)
-	propertiesMu.Unlock()
 	return sprop
 }
 
